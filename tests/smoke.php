@@ -1,0 +1,21 @@
+<?php
+// Standalone smoke test: no WordPress installation required.
+define('ABSPATH', __DIR__ . '/');
+function add_action() {}
+function add_shortcode() {}
+function register_activation_hook() {}
+function register_deactivation_hook() {}
+require dirname(__DIR__) . '/plugin/ramassedebris-service/ramassedebris-service.php';
+
+function assert_true($ok, $message) {
+    if (!$ok) {
+        fwrite(STDERR, "FAIL: " . $message . "\n");
+        exit(1);
+    }
+}
+assert_true(count(rdb_services()) >= 5, 'service catalogue');
+assert_true(count(rdb_volumes()) >= 3, 'volume catalogue');
+assert_true(isset(rdb_statuses()['nouveau']), 'initial state');
+assert_true(isset(rdb_statuses()['termine']), 'completed state');
+assert_true(count(array_unique(array_keys(rdb_statuses()))) === count(rdb_statuses()), 'unique status identifiers');
+echo "PASS: standalone plugin contract smoke checks\n";

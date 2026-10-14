@@ -1,0 +1,36 @@
+name: Validate and package WordPress extension
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          coverage: none
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: PHP syntax check
+        run: find plugin tests -name '*.php' -print0 | xargs -0 -n1 php -l
+      - name: Standalone contract checks
+        run: php tests/smoke.php
+      - name: JavaScript syntax check
+        run: node --check plugin/ramassedebris-service/assets/form.js
+      - name: Package isolated plugin
+        run: |
+          mkdir -p dist
+          cd plugin
+          zip -rq ../dist/ramassedebris-service.zip ramassedebris-service
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ramassedebris-wordpress-plugin
+          path: dist/ramassedebris-service.zip
+          retention-days: 14

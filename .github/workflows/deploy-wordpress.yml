@@ -1,0 +1,54 @@
+name: Deploy isolated WordPress plugin
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'plugin/ramassedebris-service/**'
+      - '.github/workflows/deploy-wordpress.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ramassedebris-wordpress-production
+  cancel-in-progress: false
+jobs:
+  deploy:
+    if: github.event_name == 'workflow_dispatch' || vars.RDB_AUTO_DEPLOY == 'true'
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      RD_HOST: ${{ secrets.RDB_DEPLOY_HOST }}
+      RD_PORT: ${{ secrets.RDB_DEPLOY_PORT }}
+      RD_USER: ${{ secrets.RDB_DEPLOY_USER }}
+      RD_PATH: ${{ secrets.RDB_DEPLOY_PLUGIN_PATH }}
+      RD_KEY: ${{ secrets.RDB_DEPLOY_SSH_PRIVATE_KEY }}
+      RD_KNOWN_HOSTS: ${{ secrets.RDB_DEPLOY_KNOWN_HOSTS }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check SSH deployment configuration
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$RD_HOST" && test -n "$RD_USER" && test -n "$RD_PATH" && test -n "$RD_KEY" && test -n "$RD_KNOWN_HOSTS"
+          [[ "$RD_HOST" =~ ^[A-Za-z0-9.-]+$ ]]
+          [[ "$RD_USER" =~ ^[A-Za-z0-9_.-]+$ ]]
+          [[ "$RD_PATH" =~ ^/[A-Za-z0-9_./-]+$ ]]
+          [[ "${RD_PORT:-22}" =~ ^[0-9]+$ ]]
+          [[ "$RD_PATH" == */wp-content/plugins/ramassedebris-service ]]
+      - name: Configure strict SSH verification
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          mkdir -p ~/.ssh
+          printf '%s\n' "$RD_KEY" > ~/.ssh/rd_deploy
+          printf '%s\n' "$RD_KNOWN_HOSTS" > ~/.ssh/known_hosts
+      - name: Upload only the plugin directory
+        shell: bash
+        run: |
+          set -euo pipefail
+          PORT="${RD_PORT:-22}"
+          ssh -i ~/.ssh/rd_deploy -p "$PORT" -o StrictHostKeyChecking=yes "$RD_USER@$RD_HOST" "mkdir -p '$RD_PATH'"
+          rsync -az --no-owner --no-group --no-perms -e "ssh -i $HOME/.ssh/rd_deploy -p $PORT -o StrictHostKeyChecking=yes" plugin/ramassedebris-service/ "$RD_USER@$RD_HOST:$RD_PATH/"
+      - name: Deployment information
+        run: echo "Plugin files delivered. WordPress activation and end-to-end tests remain explicit release gates."
