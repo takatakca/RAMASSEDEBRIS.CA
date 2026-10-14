@@ -37,3 +37,7 @@ Désactiver l'extension WordPress depuis l'administration (les demandes restent 
 ## Données et confidentialité
 
 Les demandes sont enregistrées comme publications privées de type rdb_demande et métadonnées WordPress; accès au tableau de suivi réservé aux administrateurs. Les alertes sont envoyées à l'adresse administrateur configurée dans WordPress. Confirmer la politique de confidentialité, les durées de conservation et les processus de demande d'accès/suppression avant mise en production. Les dossiers marqués « terminé » depuis plus de 180 jours sont supprimés par tâche WordPress quotidienne (50 par exécution).
+
+## Exportation et suppression sur demande
+
+Le plugin est raccordé aux outils natifs WordPress de confidentialité par adresse courriel vérifiée. Les demandes déposées sans courriel exigent une vérification d'identité et un traitement administratif séparés. Les changements de statut créent un historique d'audit interne.

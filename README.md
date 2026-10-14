@@ -16,6 +16,8 @@ Le répertoire plugin/ramassedebris-service contient une extension WordPress aut
 - Tableau de suivi administrateur : nouvelle demande → contactée → planifiée → terminée.
 - Notification à l'adresse administrateur WordPress par wp_mail (nécessite SMTP opérationnel).
 - Purge automatique des **dossiers terminés** depuis 180 jours, sans purge des demandes ouvertes.
+- Exportation et effacement des données par courriel vérifié via les outils natifs WordPress; demandes sans courriel à gérer manuellement.
+- Historique d'audit des changements de statut (date et identifiant administrateur).
 
 **Contact professionnel de référence** : 514 825-2825 — ramassedebris.ca@gmail.com — LaSalle, Montréal.
 

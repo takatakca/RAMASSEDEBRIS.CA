@@ -44,6 +44,106 @@ function rdb_statuses() {
     );
 }
 
+
+/**
+ * Connect the plugin's stored requests to the native WordPress privacy tools.
+ * The standard WordPress workflow verifies the requester's email address.
+ * Phone-only requests need an administrator-assisted privacy request.
+ */
+add_filter('wp_privacy_personal_data_exporters', function ($exporters) {
+    $exporters['ramassedebris'] = array(
+        'exporter_friendly_name' => 'Demandes Ramasse Débris',
+        'callback' => 'rdb_export_personal_data',
+    );
+    return $exporters;
+});
+add_filter('wp_privacy_personal_data_erasers', function ($erasers) {
+    $erasers['ramassedebris'] = array(
+        'eraser_friendly_name' => 'Demandes Ramasse Débris',
+        'callback' => 'rdb_erase_personal_data',
+    );
+    return $erasers;
+});
+
+function rdb_privacy_query($email, $page = 1) {
+    return new WP_Query(array(
+        'post_type' => 'rdb_demande',
+        'post_status' => 'private',
+        'posts_per_page' => 25,
+        'paged' => max(1, (int) $page),
+        'meta_query' => array(array(
+            'key' => '_rdb_email',
+            'value' => sanitize_email($email),
+            'compare' => '=',
+        )),
+        'no_found_rows' => true,
+    ));
+}
+
+function rdb_export_personal_data($email, $page = 1) {
+    if (!is_email($email)) {
+        return array('data' => array(), 'done' => true);
+    }
+    $query = rdb_privacy_query($email, $page);
+    $data = array();
+    $fields = array(
+        'name' => 'Nom',
+        'phone' => 'Téléphone',
+        'email' => 'Courriel',
+        'city' => 'Ville',
+        'postal' => 'Code postal',
+        'service' => 'Type de ramassage',
+        'volume' => 'Volume',
+        'date' => 'Date souhaitée',
+        'details' => 'Détails',
+        'consent_at' => 'Consentement enregistré le',
+    );
+    foreach ($query->posts as $request) {
+        $items = array();
+        foreach ($fields as $key => $label) {
+            $items[] = array(
+                'name' => $label,
+                'value' => (string) get_post_meta($request->ID, '_rdb_' . $key, true),
+            );
+        }
+        $data[] = array(
+            'group_id' => 'ramassedebris',
+            'group_label' => 'Demandes de ramassage',
+            'item_id' => 'rdb-' . $request->ID,
+            'data' => $items,
+        );
+    }
+    return array('data' => $data, 'done' => count($query->posts) < 25);
+}
+
+function rdb_erase_personal_data($email, $page = 1) {
+    if (!is_email($email)) {
+        return array('items_removed' => false, 'items_retained' => true, 'messages' => array(), 'done' => true);
+    }
+    // Always process the first page: deleting records shrinks the result set.
+    $query = rdb_privacy_query($email, 1);
+    $removed = false;
+    foreach ($query->posts as $request) {
+        if (wp_delete_post($request->ID, true)) {
+            $removed = true;
+        }
+    }
+    return array(
+        'items_removed' => $removed,
+        'items_retained' => false,
+        'messages' => array(),
+        'done' => count($query->posts) < 25,
+    );
+}
+
+function rdb_truncate($value, $length) {
+    return function_exists('mb_substr') ? mb_substr($value, 0, $length) : substr($value, 0, $length);
+}
+
+function rdb_text_length($value) {
+    return function_exists('mb_strlen') ? mb_strlen($value) : strlen($value);
+}
+
 add_action('init', function () {
     register_post_type('rdb_demande', array(
         'label' => 'Demandes de ramassage',
@@ -222,19 +322,19 @@ function rdb_handle_request() {
         $raw = isset($_POST['rdb_' . $field]) && is_string($_POST['rdb_' . $field]) ? wp_unslash($_POST['rdb_' . $field]) : '';
         $values[$field] = $field === 'details' ? sanitize_textarea_field($raw) : sanitize_text_field($raw);
     }
-    $values['name'] = mb_substr($values['name'], 0, 100);
-    $values['phone'] = mb_substr($values['phone'], 0, 30);
-    $values['city'] = mb_substr($values['city'], 0, 100);
-    $values['details'] = mb_substr($values['details'], 0, 1500);
+    $values['name'] = rdb_truncate($values['name'], 100);
+    $values['phone'] = rdb_truncate($values['phone'], 30);
+    $values['city'] = rdb_truncate($values['city'], 100);
+    $values['details'] = rdb_truncate($values['details'], 1500);
     $values['email'] = sanitize_email($values['email']);
     $values['postal'] = strtoupper(trim($values['postal']));
     $consent = isset($_POST['rdb_consent']) && wp_unslash($_POST['rdb_consent']) === '1';
 
     $valid = $consent &&
-        mb_strlen($values['name']) >= 2 &&
+        rdb_text_length($values['name']) >= 2 &&
         preg_match('/^[0-9+().\s-]{7,30}$/', $values['phone']) &&
-        mb_strlen($values['city']) >= 2 &&
-        mb_strlen($values['details']) >= 10 &&
+        rdb_text_length($values['city']) >= 2 &&
+        rdb_text_length($values['details']) >= 10 &&
         isset(rdb_services()[$values['service']]) &&
         isset(rdb_volumes()[$values['volume']]) &&
         (!$values['email'] || is_email($values['email'])) &&
@@ -371,6 +471,18 @@ function rdb_render_admin() {
               <?php if (get_post_meta($id, '_rdb_notification_sent', true) === '0') : ?>
                 <p><em>Courriel d’alerte non confirmé. Consultez le réglage SMTP.</em></p>
               <?php endif; ?>
+              <?php $history = get_post_meta($id, '_rdb_status_history', false); ?>
+              <?php if ($history) : ?>
+                <details><summary>Historique des statuts</summary><ul>
+                  <?php foreach ($history as $entry) : ?>
+                    <li><?php echo esc_html(isset($entry['changed_at']) ? $entry['changed_at'] : ''); ?> —
+                      <?php echo esc_html(isset($entry['from']) ? $entry['from'] : ''); ?> →
+                      <?php echo esc_html(isset($entry['to']) ? $entry['to'] : ''); ?>
+                      (<?php echo esc_html(isset($entry['by_user_id']) ? '#' . $entry['by_user_id'] : ''); ?>)
+                    </li>
+                  <?php endforeach; ?>
+                </ul></details>
+              <?php endif; ?>
               <form action="<?php echo esc_url(admin_url('admin-post.php')); ?>" method="post">
                 <input type="hidden" name="action" value="rdb_update_status">
                 <input type="hidden" name="rdb_id" value="<?php echo esc_attr($id); ?>">
@@ -417,9 +529,18 @@ add_action('admin_post_rdb_update_status', function () {
     if (!$id || !wp_verify_nonce($nonce, 'rdb_update_' . $id) || !isset(rdb_statuses()[$status]) || get_post_type($id) !== 'rdb_demande') {
         wp_die('Demande invalide.', '', array('response' => 400));
     }
-    update_post_meta($id, '_rdb_status', $status);
-    // Updating post_modified also starts the completed-case retention clock.
-    wp_update_post(array('ID' => $id));
+    $old_status = get_post_meta($id, '_rdb_status', true);
+    if ($old_status !== $status) {
+        add_post_meta($id, '_rdb_status_history', array(
+            'from' => $old_status,
+            'to' => $status,
+            'by_user_id' => get_current_user_id(),
+            'changed_at' => current_time('mysql'),
+        ));
+        update_post_meta($id, '_rdb_status', $status);
+        // Updating post_modified also starts the completed-case retention clock.
+        wp_update_post(array('ID' => $id));
+    }
     wp_safe_redirect(admin_url('admin.php?page=rdb-demandes&updated=1'), 303);
     exit;
 });
