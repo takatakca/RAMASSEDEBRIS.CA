@@ -72,3 +72,7 @@ L'extension correspond à la version 0.4.0; la présence du fichier sur le serve
 ## Pages en cache et nonce invité
 
 En version 0.4.0, le shortcode fournit une URL WordPress `admin-ajax.php`. Avec JavaScript, le formulaire récupère un nonce frais par POST `action=rdb_refresh_nonce` juste avant l'envoi; une panne du service affiche une erreur sans soumettre ni annoncer une demande réussie. Sans JavaScript, le formulaire WordPress original reste disponible, avec le risque normal d'un nonce expiré si la page était mise en cache longtemps. Exclure `wp-admin/admin-ajax.php` et `wp-admin/admin-post.php` du cache/CDN, confirmer HTTP POST et tester la soumission sur une page anciennement mise en cache. L'endpoint public de nonce ne constitue pas une authentification ni une protection anti-spam autonome.
+
+## Tests de sécurité du gestionnaire public
+
+Le script `bash tests/run-request-handler.sh` vérifie la soumission du formulaire avec des interfaces WordPress simulées : méthode POST, nonce, honeypot, limite des demandes, champs invalides ou tableau inattendu, consentement, sauvegarde privée, contenu sans coordonnées dans la notification et échec SMTP. Ces tests ne publient aucune information personnelle, n'envoient aucun courriel réel et ne remplacent pas une préproduction WordPress intégrée.

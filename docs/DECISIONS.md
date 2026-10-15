@@ -32,3 +32,6 @@ Le workflow de production passe d'un déclencheur direct `push` à `workflow_run
 
 ## D-010 — Jeton anti-CSRF et caches WordPress (2026-10-15)
 Une page publique mise en cache peut servir un nonce WordPress expiré. La version 0.4.0 demande via POST AJAX un jeton frais juste avant la soumission lorsque JavaScript est présent. Ce endpoint public ne vérifie pas l'identité et ne remplace ni les limites de débit ni un contrôle anti-abus serveur. Le formulaire natif demeure possible sans JavaScript.
+
+## D-011 — Tester les comportements critiques sans base client (2026-10-15)
+Le gestionnaire de formulaire public est vérifié dans des processus PHP isolés au moyen de doubles d'interfaces WordPress. Les scénarios évaluent validation, confidentialité et échecs d'infrastructure sans manipuler de demandes réelles. Ce complément à la CI ne suffit pas à certifier la compatibilité WordPress complète en production.

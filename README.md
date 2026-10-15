@@ -35,10 +35,11 @@ Lancer localement si PHP et Node sont installés :
     find plugin tests -name '*.php' -print0 | xargs -0 -n1 php -l
     php tests/smoke.php
     bash tests/run-manual-deletion.sh
+    bash tests/run-request-handler.sh
     node --check plugin/ramassedebris-service/assets/form.js
     node tests/form.test.cjs
 
-Le workflow .github/workflows/validate.yml répète ces contrôles et génère un ZIP installable en artifact GitHub Actions.
+Les tests PHP couvrent également le traitement HTTP côté serveur (nonce, anti-spam, validation, persistance privée, notification et échec SMTP). Le workflow .github/workflows/validate.yml répète ces contrôles et génère un ZIP installable en artifact GitHub Actions.
 
 ## Déploiement
 

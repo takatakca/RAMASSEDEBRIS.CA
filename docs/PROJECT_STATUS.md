@@ -21,7 +21,8 @@ Repository : takatakca/RAMASSEDEBRIS.CA; branche : main. Avant les changements d
 - Tests administrateur (droits, nonce, confirmation, type, erreurs) : CI réussie sur 2adf208da947b9f7a6772655bcbda2c8659d3069, run 38777124775.
 - Version 0.3.1 : effacement par lots robuste face aux dossiers impossible à supprimer. Commit 10c94a044765166481c2f5fc4843bc30c0781337; CI réussie, run 38777609101.
 - GitHub Actions Deploy isolated WordPress plugin du même commit : ignoré volontairement, production non modifiée.
-- Lot 0.4.0 à valider sur le prochain commit : renouvellement AJAX du nonce à la soumission et tests du script navigateur; déploiement désormais dépendant de la réussite de la CI (workflow_run) avec prévalidation manuelle et contrôle du HEAD de main.
+- Plugin 0.4.0 au commit 52aa5881142e54f5d348bd15e35ee2f9d59bd88f : CI **réussie**, run 38791143965; scénario `workflow_run` de déploiement observé et **ignoré volontairement**, run 38791179144.
+- Tests complémentaires du gestionnaire public de demande ajoutés (POST, nonce, honeypot, rate-limit, validité, sauvegarde privée, SMTP, échecs); résultat CI du prochain commit à vérifier.
 - Tests WordPress réels, plugins historiques, notifications SMTP, sécurité de l'instance, restauration des sauvegardes : non vérifiés.
 - Déploiement et activation sur ramassedebris.ca : NON confirmés; le workflow de production précédent a été ignoré.
 - Intégrations WooCommerce/YITH, Operations Center et TAKATAK : hors périmètre de la version actuelle; sources et contrats à récupérer.
