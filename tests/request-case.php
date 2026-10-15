@@ -55,6 +55,7 @@ function wp_insert_post($data, $wp_error = false) {
     return 42;
 }
 function get_option($key) { return $key === 'admin_email' ? 'admin@example.test' : ''; }
+function admin_url($path) { return 'https://test.example/wp-admin/' . $path; }
 function wp_mail($to, $subject, $body, $headers) {
     $GLOBALS['mail'] = array($to, $subject, $body);
     return $GLOBALS['scenario'] !== 'smtp_failure';
