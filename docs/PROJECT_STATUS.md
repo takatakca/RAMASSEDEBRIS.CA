@@ -6,7 +6,7 @@ Repository : takatakca/RAMASSEDEBRIS.CA; branche : main. Avant les changements d
 ## Réalisé dans le dépôt
 - Extension WordPress autonome de collecte de demandes en français, affichage mobile, date souhaitée sans confirmation de réservation.
 - Enregistrement de demandes privées, console administrateur limitée à manage_options, statut et historique.
-- Protection de formulaire : nonce, honeypot, contrôle de champs côté serveur, limite par IP.
+- Protection de formulaire : nonce, renouvellement AJAX du nonce pour les pages mises en cache, honeypot, contrôle de champs côté serveur, limite par IP.
 - Avis à l'adresse d'administration WordPress, sans données personnelles détaillées dans le corps du courriel à partir de la version 0.2.0.
 - Export et effacement des dossiers par adresse courriel via les outils natifs WordPress; signalement des échecs de suppression; effacement manuel administrateur avec vérification préalable d'identité.
 - Suppression programmée des dossiers terminés depuis 180 jours (dépend de WP-Cron).
@@ -21,6 +21,7 @@ Repository : takatakca/RAMASSEDEBRIS.CA; branche : main. Avant les changements d
 - Tests administrateur (droits, nonce, confirmation, type, erreurs) : CI réussie sur 2adf208da947b9f7a6772655bcbda2c8659d3069, run 38777124775.
 - Version 0.3.1 : effacement par lots robuste face aux dossiers impossible à supprimer. Commit 10c94a044765166481c2f5fc4843bc30c0781337; CI réussie, run 38777609101.
 - GitHub Actions Deploy isolated WordPress plugin du même commit : ignoré volontairement, production non modifiée.
+- Lot 0.4.0 à valider sur le prochain commit : renouvellement AJAX du nonce à la soumission et tests du script navigateur; déploiement désormais dépendant de la réussite de la CI (workflow_run) avec prévalidation manuelle et contrôle du HEAD de main.
 - Tests WordPress réels, plugins historiques, notifications SMTP, sécurité de l'instance, restauration des sauvegardes : non vérifiés.
 - Déploiement et activation sur ramassedebris.ca : NON confirmés; le workflow de production précédent a été ignoré.
 - Intégrations WooCommerce/YITH, Operations Center et TAKATAK : hors périmètre de la version actuelle; sources et contrats à récupérer.

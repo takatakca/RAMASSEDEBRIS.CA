@@ -26,3 +26,9 @@ Un dossier sans courriel ne peut pas être retrouvé par le workflow natif WordP
 
 ## D-008 — Effacement par lots résilient (2026-10-15)
 Traitement d'au plus cinq lots de 25 dossiers par invocation WordPress. La première page est réinterrogée après suppression; les dossiers non supprimables sont temporairement exclus du reste du même lot afin que les autres puissent être effacés. Les opérations plus grandes continuent à l'appel suivant. Toute défaillance est signalée.
+
+## D-009 — Déployer après validation, pas en parallèle (2026-10-15)
+Le workflow de production passe d'un déclencheur direct `push` à `workflow_run` réussi du workflow de validation sur `main`, seulement si `RDB_AUTO_DEPLOY=true`; une exécution manuelle revalide localement et exige que le SHA déployé soit le HEAD actuel de main. Le transfert compare les sommes SHA-256 du PHP, du CSS et du JavaScript. Aucune activation WordPress automatique n'est supposée.
+
+## D-010 — Jeton anti-CSRF et caches WordPress (2026-10-15)
+Une page publique mise en cache peut servir un nonce WordPress expiré. La version 0.4.0 demande via POST AJAX un jeton frais juste avant la soumission lorsque JavaScript est présent. Ce endpoint public ne vérifie pas l'identité et ne remplace ni les limites de débit ni un contrôle anti-abus serveur. Le formulaire natif demeure possible sans JavaScript.

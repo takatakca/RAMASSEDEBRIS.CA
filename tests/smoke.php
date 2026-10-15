@@ -11,6 +11,14 @@ function register_activation_hook() {}
 function register_deactivation_hook() {}
 function is_email($value) { return filter_var($value, FILTER_VALIDATE_EMAIL) !== false; }
 function sanitize_email($value) { return strtolower(trim((string) $value)); }
+function wp_create_nonce($action) { return 'nonce-for:' . $action; }
+function wp_send_json_success($payload) {
+    $GLOBALS['rdb_ajax_response'] = array('status' => 200, 'success' => true, 'data' => $payload);
+}
+function wp_send_json_error($payload, $status) {
+    $GLOBALS['rdb_ajax_response'] = array('status' => $status, 'success' => false, 'data' => $payload);
+}
+
 
 $GLOBALS['rdb_test_records'] = array();
 $GLOBALS['rdb_test_fail_delete'] = array();
@@ -55,7 +63,7 @@ function check($actual, $expected, $description) {
     }
 }
 
-check(RDB_VERSION, '0.3.1', 'plugin version contract');
+check(RDB_VERSION, '0.4.0', 'plugin version contract');
 check(count(rdb_services()), 5, 'service catalogue');
 check(count(rdb_volumes()), 4, 'volume catalogue');
 check(count(rdb_statuses()), 4, 'status catalogue');
@@ -64,6 +72,16 @@ check(rdb_text_length('bonjour'), 7, 'text length');
 check(function_exists('rdb_export_personal_data'), true, 'WordPress privacy exporter');
 check(function_exists('rdb_erase_personal_data'), true, 'WordPress privacy eraser');
 check(function_exists('rdb_handle_manual_delete'), true, 'admin-only manual privacy deletion handler');
+$_SERVER['REQUEST_METHOD'] = 'POST';
+rdb_refresh_nonce();
+check($GLOBALS['rdb_ajax_response']['success'], true, 'nonce refresh succeeds with POST');
+check($GLOBALS['rdb_ajax_response']['data']['nonce'], 'nonce-for:rdb_new_request', 'nonce uses correct WP action');
+$_SERVER['REQUEST_METHOD'] = 'GET';
+rdb_refresh_nonce();
+check($GLOBALS['rdb_ajax_response']['success'], false, 'nonce refresh rejects GET');
+check($GLOBALS['rdb_ajax_response']['status'], 405, 'nonce refresh HTTP method response');
+unset($_SERVER['REQUEST_METHOD']);
+
 
 $today = '2026-10-15';
 $valid = array(

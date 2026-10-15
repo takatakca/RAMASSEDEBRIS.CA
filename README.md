@@ -12,7 +12,7 @@ Le répertoire plugin/ramassedebris-service contient une extension WordPress aut
 - Collecte de demandes pour meubles, électroménagers, débris de rénovation, commerces et autres objets.
 - Date souhaitée **non contractuelle** (aucun prix ni réservation automatiquement confirmé).
 - Stockage privé dans WordPress; aucun compte WooCommerce créé et aucune transmission à TAKATAK par défaut.
-- Protection des formulaires (nonce, honeypot, validation serveur, limite de 5 demandes par IP/heure).
+- Protection des formulaires (nonce, honeypot, validation serveur, limite de 5 demandes par IP/heure), avec renouvellement AJAX du nonce au moment de l'envoi pour les pages en cache.
 - Tableau de suivi administrateur : nouvelle demande → contactée → planifiée → terminée.
 - Notification sans coordonnées client à l'adresse administrateur WordPress par wp_mail (nécessite SMTP opérationnel).
 - Purge automatique des **dossiers terminés** depuis 180 jours, sans purge des demandes ouvertes.
@@ -26,7 +26,7 @@ Le répertoire plugin/ramassedebris-service contient une extension WordPress aut
 
 Les sources historiques du site ne sont pas incluses dans ce dépôt. Lire AGENTS.md, docs/PROJECT_STATUS.md, docs/TASK_QUEUE.md, docs/AGENT_HANDOFF.md et docs/DECISIONS.md avant de modifier ou déployer quoi que ce soit.
 
-Version actuelle du plugin : **0.3.1**.
+Version actuelle du plugin : **0.4.0**.
 
 ## Développement / vérification
 
@@ -36,6 +36,7 @@ Lancer localement si PHP et Node sont installés :
     php tests/smoke.php
     bash tests/run-manual-deletion.sh
     node --check plugin/ramassedebris-service/assets/form.js
+    node tests/form.test.cjs
 
 Le workflow .github/workflows/validate.yml répète ces contrôles et génère un ZIP installable en artifact GitHub Actions.
 

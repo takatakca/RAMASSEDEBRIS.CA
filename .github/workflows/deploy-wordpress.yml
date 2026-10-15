@@ -1,10 +1,9 @@
 name: Deploy isolated WordPress plugin
 on:
-  push:
+  workflow_run:
+    workflows: ["Validate and package WordPress extension"]
+    types: [completed]
     branches: [main]
-    paths:
-      - 'plugin/ramassedebris-service/**'
-      - '.github/workflows/deploy-wordpress.yml'
   workflow_dispatch:
 permissions:
   contents: read
@@ -13,7 +12,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   deploy:
-    if: github.event_name == 'workflow_dispatch' || vars.RDB_AUTO_DEPLOY == 'true'
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_repository.full_name == github.repository && vars.RDB_AUTO_DEPLOY == 'true')
     runs-on: ubuntu-latest
     environment: production
     env:
@@ -25,6 +24,34 @@ jobs:
       RD_KNOWN_HOSTS: ${{ secrets.RDB_DEPLOY_KNOWN_HOSTS }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+          persist-credentials: false
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          coverage: none
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate checked-out code before deployment
+        shell: bash
+        run: |
+          set -euo pipefail
+          find plugin tests -name '*.php' -print0 | xargs -0 -n1 php -l
+          php tests/smoke.php
+          bash tests/run-manual-deletion.sh
+          node --check plugin/ramassedebris-service/assets/form.js
+          node tests/form.test.cjs
+          bash -n scripts/wp-audit-readonly.sh
+      - name: Reject deployment of an outdated commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          CURRENT="$(git rev-parse HEAD)"
+          REMOTE="$(git ls-remote origin refs/heads/main | awk '{print $1}')"
+          test -n "$REMOTE"
+          test "$CURRENT" = "$REMOTE"
       - name: Check SSH deployment configuration
         shell: bash
         run: |
@@ -57,10 +84,12 @@ jobs:
         run: |
           set -euo pipefail
           PORT="${RD_PORT:-22}"
-          LOCAL_SHA="$(sha256sum plugin/ramassedebris-service/ramassedebris-service.php | awk '{print $1}')"
-          REMOTE_SHA="$(ssh -i ~/.ssh/rd_deploy -p "$PORT" -o StrictHostKeyChecking=yes "$RD_USER@$RD_HOST" "sha256sum '$RD_PATH/ramassedebris-service.php'" | awk '{print $1}')"
-          test -n "$REMOTE_SHA"
-          test "$LOCAL_SHA" = "$REMOTE_SHA"
-          echo "Remote plugin source checksum verified."
+          for FILE in ramassedebris-service.php assets/form.css assets/form.js; do
+            LOCAL_SHA="$(sha256sum "plugin/ramassedebris-service/$FILE" | awk '{print $1}')"
+            REMOTE_SHA="$(ssh -i ~/.ssh/rd_deploy -p "$PORT" -o StrictHostKeyChecking=yes "$RD_USER@$RD_HOST" "sha256sum '$RD_PATH/$FILE'" | awk '{print $1}')"
+            test -n "$REMOTE_SHA"
+            test "$LOCAL_SHA" = "$REMOTE_SHA"
+          done
+          echo "Remote plugin PHP, CSS and JS checksums verified."
       - name: Deployment information
-        run: echo "Plugin files transferred and checksummed. WordPress activation and end-to-end tests remain explicit release gates."
+        run: echo "Plugin PHP, CSS and JavaScript files transferred and checksummed. WordPress activation and end-to-end tests remain explicit release gates."

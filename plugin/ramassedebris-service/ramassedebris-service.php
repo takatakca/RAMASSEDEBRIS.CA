@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Ramasse Débris — Demandes de ramassage
  * Description: Formulaire de demande de ramassage et suivi privé dans WordPress. Aucun changement à WooCommerce.
- * Version: 0.3.1
+ * Version: 0.4.0
  * Requires at least: 6.0
  * Requires PHP: 7.4
  * Author: RAMASSE DÉBRIS MONTRÉAL
@@ -13,7 +13,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('RDB_VERSION', '0.3.1');
+define('RDB_VERSION', '0.4.0');
 define('RDB_PLUGIN_FILE', __FILE__);
 
 function rdb_services() {
@@ -262,6 +262,23 @@ add_action('wp_enqueue_scripts', function () {
     wp_register_script('rdb-service-form', plugins_url('assets/form.js', RDB_PLUGIN_FILE), array(), RDB_VERSION, true);
 });
 
+
+/**
+ * Shortcodes can be rendered by a full-page cache for longer than a WordPress
+ * nonce remains valid. Refresh the guest nonce from a non-cacheable AJAX POST
+ * immediately before submission. This is not a substitute for anti-spam.
+ */
+add_action('wp_ajax_nopriv_rdb_refresh_nonce', 'rdb_refresh_nonce');
+add_action('wp_ajax_rdb_refresh_nonce', 'rdb_refresh_nonce');
+
+function rdb_refresh_nonce() {
+    if (!isset($_SERVER['REQUEST_METHOD']) || $_SERVER['REQUEST_METHOD'] !== 'POST') {
+        wp_send_json_error(array('message' => 'Méthode non autorisée.'), 405);
+        return;
+    }
+    wp_send_json_success(array('nonce' => wp_create_nonce('rdb_new_request')));
+}
+
 add_shortcode('ramassedebris_demande', function () {
     wp_enqueue_style('rdb-service-form');
     wp_enqueue_script('rdb-service-form');
@@ -289,7 +306,7 @@ add_shortcode('ramassedebris_demande', function () {
           <?php echo esc_html($messages[$result]); ?>
         </div>
       <?php endif; ?>
-      <form class="rdb-form" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" method="post">
+      <form class="rdb-form" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" method="post" data-rdb-nonce-endpoint="<?php echo esc_url(admin_url('admin-ajax.php')); ?>">
         <input type="hidden" name="action" value="rdb_submit_request">
         <?php wp_nonce_field('rdb_new_request', 'rdb_nonce'); ?>
         <div class="rdb-trap" aria-hidden="true"><label>Ne pas remplir <input type="text" name="rdb_website" tabindex="-1" autocomplete="off"></label></div>

@@ -15,7 +15,7 @@ Le dépôt a été initialisé le 14 octobre 2026 avec un seul README, sans le c
 
 ## Connexion CI/CD GitHub Actions
 
-Le workflow Deploy isolated WordPress plugin accepte un lancement manuel. Un déploiement automatique sur changement du plugin est **désactivé par défaut**. Pour l'activer après qualification, définir la variable Actions RDB_AUTO_DEPLOY=true.
+Le workflow Deploy isolated WordPress plugin accepte un lancement manuel. Un déploiement automatique est **désactivé par défaut**. Une fois activé, il ne s'exécute qu'après le succès du workflow `Validate and package WordPress extension` sur `main` (événement `workflow_run`). Les lancements manuels revérifient également la syntaxe et les tests du dépôt avant le transfert. Un SHA obsolète par rapport à `main` est refusé. Pour l'activer après qualification, définir la variable Actions RDB_AUTO_DEPLOY=true.
 
 Configurer les secrets GitHub dans l'environnement production :
 
@@ -44,7 +44,7 @@ Le plugin est raccordé aux outils natifs WordPress de confidentialité par adre
 
 ## Contrôles avant activation
 
-- Vérifier la version 0.2.0 dans la liste des extensions WordPress et la compatibilité des extensions existantes.
+- Vérifier la version 0.4.0 dans la liste des extensions WordPress et la compatibilité des extensions existantes.
 - Envoyer une demande test : l'enregistrement doit être privé, visible uniquement aux administrateurs et le courriel d'alerte ne doit pas divulguer la description ou les coordonnées.
 - Tester l'export et l'effacement des dossiers par courriel et le signalement des erreurs de suppression; prévoir un processus manuel pour les demandes sans courriel.
 - Vérifier les protections du site (cache/CDN, nonce, honeypot, HTTP 303, SMTP, permissions) et la politique de rétention selon les obligations applicables.
@@ -67,4 +67,8 @@ En cas de déploiement SSH autorisé, le workflow compare maintenant l'empreinte
 
 L'administrateur WordPress qui a personnellement vérifié la légitimité d'une demande d'effacement peut ouvrir Ramasse Débris > Demandes, afficher « Supprimer cette demande », cocher la confirmation et envoyer le formulaire de suppression. Le serveur exige le rôle administrateur, un nonce, POST, le bon type de dossier et la confirmation. La suppression est définitive et ne concerne que l'entrée WordPress du plugin. Sauvegardes, copies d'alerte des versions antérieures et autres intégrations éventuelles doivent faire l'objet de procédures séparées.
 
-L'extension correspond à la version 0.3.1; la présence du fichier sur le serveur n'est pas une preuve de son activation. Tester les lots d'effacement volumineux et les suppressions partiellement en erreur en préproduction.
+L'extension correspond à la version 0.4.0; la présence du fichier sur le serveur n'est pas une preuve de son activation. Tester les lots d'effacement volumineux et les suppressions partiellement en erreur en préproduction.
+
+## Pages en cache et nonce invité
+
+En version 0.4.0, le shortcode fournit une URL WordPress `admin-ajax.php`. Avec JavaScript, le formulaire récupère un nonce frais par POST `action=rdb_refresh_nonce` juste avant l'envoi; une panne du service affiche une erreur sans soumettre ni annoncer une demande réussie. Sans JavaScript, le formulaire WordPress original reste disponible, avec le risque normal d'un nonce expiré si la page était mise en cache longtemps. Exclure `wp-admin/admin-ajax.php` et `wp-admin/admin-post.php` du cache/CDN, confirmer HTTP POST et tester la soumission sur une page anciennement mise en cache. L'endpoint public de nonce ne constitue pas une authentification ni une protection anti-spam autonome.

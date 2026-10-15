@@ -6,6 +6,8 @@
 | P0 | Localiser et inventorier Operations Center, tournées, camion, MCP antérieurs | Bloqué; issue #1; ne pas réinventer le code |
 | P0 | Préparer une sauvegarde restaurable et une préproduction du site actuel | Bloqué par l'accès à l'installation; issue #2 |
 | P0 | Fiabiliser validation, effacement manuel et lots partiellement en échec | Terminé côté code et CI en version 0.3.1; test E2E WordPress toujours nécessaire |
+| P0 | Renouveler le nonce des formulaires publics en cache; ne pas envoyer si indisponible | Code 0.4.0 + tests navigateur sans réseau; CI et préproduction à confirmer |
+| P0 | Empêcher le déploiement auto avant validation CI | Workflow workflow_run sur main + contrôles pré-déploiement; CI à confirmer et déclenchement réel non testé |
 | P0 | Vérifier l'installation WordPress, les rôles, la demande, les alertes, la gestion admin, l'export et l'effacement | À faire en préproduction; issue #2 |
 | P0 | Auditer WooCommerce, YITH, Elementor, Wordfence et leur sécurité | Bloqué par inventaire effectif; issue #2 |
 | P1 | Valider SMTP et mécanisme de notification | À faire en préproduction |

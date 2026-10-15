@@ -24,6 +24,8 @@ jobs:
         run: php tests/smoke.php
       - name: JavaScript syntax check
         run: node --check plugin/ramassedebris-service/assets/form.js
+      - name: Browser form nonce and error-state tests
+        run: node tests/form.test.cjs
       - name: Read-only inventory and security test script syntax
         run: bash -n scripts/wp-audit-readonly.sh tests/run-manual-deletion.sh
       - name: Manual admin deletion security tests
