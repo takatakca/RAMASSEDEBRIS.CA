@@ -15,6 +15,7 @@ Relire AGENTS.md, docs/AGENT_HANDOFF.md, docs/PROJECT_STATUS.md, docs/TASK_QUEUE
 ## Commandes de validation
     find plugin tests -name '*.php' -print0 | xargs -0 -n1 php -l
     php tests/smoke.php
+    bash tests/run-manual-deletion.sh
     node --check plugin/ramassedebris-service/assets/form.js
 
 Le workflow GitHub .github/workflows/validate.yml produit un ZIP installable. L'autodéploiement reste inactif tant que les préconditions documentées dans docs/DEPLOYMENT.md ne sont pas réunies.

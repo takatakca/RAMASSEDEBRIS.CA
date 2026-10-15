@@ -24,8 +24,10 @@ jobs:
         run: php tests/smoke.php
       - name: JavaScript syntax check
         run: node --check plugin/ramassedebris-service/assets/form.js
-      - name: Read-only inventory script syntax
-        run: bash -n scripts/wp-audit-readonly.sh
+      - name: Read-only inventory and security test script syntax
+        run: bash -n scripts/wp-audit-readonly.sh tests/run-manual-deletion.sh
+      - name: Manual admin deletion security tests
+        run: bash tests/run-manual-deletion.sh
       - name: Package isolated plugin
         run: |
           mkdir -p dist

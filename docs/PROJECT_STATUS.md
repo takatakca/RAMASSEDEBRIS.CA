@@ -17,7 +17,8 @@ Repository : takatakca/RAMASSEDEBRIS.CA; branche : main. Avant les changements d
 - Commit c22619ba2b692add1609c613e699a18bb82a48d0 : CI réussie le 2026-10-14.
 - Plugin 0.2.0, commit 2f11c628757a31fab53abc0d7b0bd6eb00c1cee3 : CI **réussie** le 2026-10-15 (run 38775895581); test de validation métier, confidentialité, syntaxe et ZIP.
 - Inventaire WP CLI en lecture seule et contrôle d'empreinte SHA-256 sur déploiement SSH : CI réussie, commit 2a3af882a04eec18e6c221368681b3973d113545, run 38776338377.
-- Plugin version 0.3.0 : suppression manuelle depuis le tableau administrateur avec confirmation et contrôle CSRF; vérifier nouvelle CI après push.
+- Plugin version 0.3.0 : suppression manuelle depuis le tableau administrateur avec confirmation et contrôle CSRF; CI réussie, commit 97e1ec9666299d938a04effce700f5128850adbb, run 38776815238.
+- Nouveau jeu de tests des protections du point d'effacement administrateur (accès, méthode, nonce, confirmation, type de dossier, erreur serveur) : CI à confirmer après commit.
 - Tests WordPress réels, plugins historiques, notifications SMTP, sécurité de l'instance, restauration des sauvegardes : non vérifiés.
 - Déploiement et activation sur ramassedebris.ca : NON confirmés; le workflow de production précédent a été ignoré.
 - Intégrations WooCommerce/YITH, Operations Center et TAKATAK : hors périmètre de la version actuelle; sources et contrats à récupérer.

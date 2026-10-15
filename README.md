@@ -34,6 +34,7 @@ Lancer localement si PHP et Node sont installés :
 
     find plugin tests -name '*.php' -print0 | xargs -0 -n1 php -l
     php tests/smoke.php
+    bash tests/run-manual-deletion.sh
     node --check plugin/ramassedebris-service/assets/form.js
 
 Le workflow .github/workflows/validate.yml répète ces contrôles et génère un ZIP installable en artifact GitHub Actions.
