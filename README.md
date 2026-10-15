@@ -44,3 +44,11 @@ Le workflow .github/workflows/deploy-wordpress.yml peut déposer uniquement le p
 ## Plan de reprise
 
 Les sources du site WordPress, l'état des intégrations, les règles métier définitives et les fonctions avancées Operations Center doivent être récupérées avant de pouvoir déclarer le projet terminé. Voir docs/REPRISE-AGENT.md.
+
+## Inventaire du site historique
+
+Lorsque l'accès à l'installation WordPress existante est disponible, lancer en utilisateur non privilégié :
+
+    bash scripts/wp-audit-readonly.sh /chemin/absolu/du/site
+
+Le script n'effectue aucune modification et ne collecte aucun secret. Le déploiement automatisé, une fois activé sur la bonne cible, compare également l'empreinte SHA-256 du fichier de plugin transféré. Cela ne remplace pas l'activation et les tests du site.

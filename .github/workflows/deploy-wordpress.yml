@@ -35,6 +35,8 @@ jobs:
           [[ "$RD_PATH" =~ ^/[A-Za-z0-9_./-]+$ ]]
           [[ "${RD_PORT:-22}" =~ ^[0-9]+$ ]]
           [[ "$RD_PATH" == */wp-content/plugins/ramassedebris-service ]]
+          [[ "$RD_PATH" != *".."* ]]
+          (( 10#${RD_PORT:-22} >= 1 && 10#${RD_PORT:-22} <= 65535 ))
       - name: Configure strict SSH verification
         shell: bash
         run: |
@@ -50,5 +52,15 @@ jobs:
           PORT="${RD_PORT:-22}"
           ssh -i ~/.ssh/rd_deploy -p "$PORT" -o StrictHostKeyChecking=yes "$RD_USER@$RD_HOST" "mkdir -p '$RD_PATH'"
           rsync -az --no-owner --no-group --no-perms -e "ssh -i $HOME/.ssh/rd_deploy -p $PORT -o StrictHostKeyChecking=yes" plugin/ramassedebris-service/ "$RD_USER@$RD_HOST:$RD_PATH/"
+      - name: Verify transferred plugin checksum
+        shell: bash
+        run: |
+          set -euo pipefail
+          PORT="${RD_PORT:-22}"
+          LOCAL_SHA="$(sha256sum plugin/ramassedebris-service/ramassedebris-service.php | awk '{print $1}')"
+          REMOTE_SHA="$(ssh -i ~/.ssh/rd_deploy -p "$PORT" -o StrictHostKeyChecking=yes "$RD_USER@$RD_HOST" "sha256sum '$RD_PATH/ramassedebris-service.php'" | awk '{print $1}')"
+          test -n "$REMOTE_SHA"
+          test "$LOCAL_SHA" = "$REMOTE_SHA"
+          echo "Remote plugin source checksum verified."
       - name: Deployment information
-        run: echo "Plugin files delivered. WordPress activation and end-to-end tests remain explicit release gates."
+        run: echo "Plugin files transferred and checksummed. WordPress activation and end-to-end tests remain explicit release gates."

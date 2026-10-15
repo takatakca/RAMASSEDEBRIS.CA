@@ -4,14 +4,14 @@
 **Dépôt :** takatakca/RAMASSEDEBRIS.CA  
 **Branche :** main  
 **Dernier commit confirmé avant cette reprise :** c22619ba2b692add1609c613e699a18bb82a48d0  
-**SHA de la dernière livraison de cette session :** lire HEAD de main au redémarrage; le dernier commit de cette session doit y être présent et avoir une CI verte.  
+**Dernier commit poussé et vérifié pendant cette session :** 2f11c628757a31fab53abc0d7b0bd6eb00c1cee3 (CI GitHub réussie, run 38775895581). Le commit plus récent contenant cet inventaire et le contrôle d'empreinte doit être confirmé via HEAD de main.  
 **Version cible du plugin :** 0.2.0.
 
 ## Dernière tâche achevée
 Le plugin WordPress indépendant a été amélioré : validation métier testable, échec d'effacement explicitement signalé, et courriel de notification sans données personnelles détaillées. Les tests du formulaire et de la confidentialité ont été étendus. Les documents permanents et AGENTS.md sont ajoutés.
 
 ## Tâche en cours
-Confirmer le push du lot 0.2.0, consulter les résultats GitHub Actions et corriger immédiatement tout échec. La prochaine tâche principale reste la récupération du site WordPress réel et d'Operations Center, issue #1.
+Lot 0.2.0 publié et CI réussie. Confirmer le prochain commit ajoutant l'inventaire WordPress et les vérifications de transfert, puis corriger immédiatement tout échec. La prochaine tâche principale reste la récupération du site WordPress réel et d'Operations Center, issue #1.
 
 ## Fichiers concernés
 - plugin/ramassedebris-service/ramassedebris-service.php
@@ -23,11 +23,17 @@ Confirmer le push du lot 0.2.0, consulter les résultats GitHub Actions et corri
 - docs/AGENT_HANDOFF.md
 - docs/DEPLOYMENT.md
 - docs/DECISIONS.md
+- scripts/wp-audit-readonly.sh
+- .github/workflows/{validate,deploy-wordpress}.yml
 
 ## Vérifications exécutées et à refaire
 - Lecture GitHub get_repo, arborescence, documents, commits, PR, issues #1 à #3 et workflow runs.
 - CI du commit c22619b : PHP lint, smoke, JS syntax et ZIP **réussis**.
-- Tester la nouvelle CI 0.2.0 après push via Actions. Préproduction WordPress réelle **non disponible pour ce run**.
+- CI du lot 0.2.0 : syntaxe PHP, tests métier, syntaxe JS, ZIP **réussis** (38775895581). Contrôles du commit d'inventaire : à confirmer après push. Préproduction WordPress réelle **non disponible pour ce run**.
+
+## Recherche inter-repositories
+
+Recherche GitHub sur les termes Ramasse Débris et Operations Center dans les dépôts accessibles : aucune source de l'ancien site ou des anciennes opérations n'a été retrouvée hors de ce dépôt. Le référentiel knowledgeAI documente le nom de domaine, pas le code applicatif.
 
 ## Problèmes, statut réel et accès
 - **Déploiement : NON effectué pendant cette reprise.** Le workflow SSH précédent est skipped; l'autodéploiement est désactivé.

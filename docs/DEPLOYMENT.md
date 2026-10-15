@@ -50,3 +50,15 @@ Le plugin est raccordé aux outils natifs WordPress de confidentialité par adre
 - Vérifier les protections du site (cache/CDN, nonce, honeypot, HTTP 303, SMTP, permissions) et la politique de rétention selon les obligations applicables.
 - Vérifier la santé de WordPress, les opérations WooCommerce/YITH existantes et restaurer la sauvegarde en cas de régression.
 - N'autoriser RDB_AUTO_DEPLOY que lorsque l'environnement de production, la sauvegarde et le rollback sont réellement qualifiés.
+
+## Inventaire de l'installation réelle (lecture seule)
+
+Sur l'hébergement ayant une installation WordPress et WP-CLI fonctionnels, exécuter, en utilisateur non root autorisé :
+
+    bash scripts/wp-audit-readonly.sh /chemin/absolu/du/site
+
+Cette commande ne lit pas les mots de passe ni les valeurs de wp-config.php; elle affiche versions WordPress, PHP, thèmes, extensions, URL publique et hooks cron. Les résultats peuvent contenir des métadonnées internes : ne les rendre publics qu'après examen et épuration.
+
+## Preuve du transfert
+
+En cas de déploiement SSH autorisé, le workflow compare maintenant l'empreinte SHA-256 du fichier principal du plugin entre GitHub Actions et le serveur distant. Ce contrôle prouve uniquement le transfert identique du fichier : **il ne prouve pas que l'extension soit active ni que le site soit fonctionnel**.
