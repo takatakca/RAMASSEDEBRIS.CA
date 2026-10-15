@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Ramasse Débris — Demandes de ramassage
  * Description: Formulaire de demande de ramassage et suivi privé dans WordPress. Aucun changement à WooCommerce.
- * Version: 0.3.0
+ * Version: 0.3.1
  * Requires at least: 6.0
  * Requires PHP: 7.4
  * Author: RAMASSE DÉBRIS MONTRÉAL
@@ -13,7 +13,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('RDB_VERSION', '0.3.0');
+define('RDB_VERSION', '0.3.1');
 define('RDB_PLUGIN_FILE', __FILE__);
 
 function rdb_services() {
@@ -65,12 +65,13 @@ add_filter('wp_privacy_personal_data_erasers', function ($erasers) {
     return $erasers;
 });
 
-function rdb_privacy_query($email, $page = 1) {
+function rdb_privacy_query($email, $page = 1, $excluded_ids = array()) {
     return new WP_Query(array(
         'post_type' => 'rdb_demande',
         'post_status' => 'private',
         'posts_per_page' => 25,
         'paged' => max(1, (int) $page),
+        'post__not_in' => $excluded_ids,
         'meta_query' => array(array(
             'key' => '_rdb_email',
             'value' => sanitize_email($email),
@@ -120,23 +121,37 @@ function rdb_erase_personal_data($email, $page = 1) {
     if (!is_email($email)) {
         return array('items_removed' => false, 'items_retained' => true, 'messages' => array(), 'done' => true);
     }
-    // Always process the first page: deleting records shrinks the result set.
-    $query = rdb_privacy_query($email, 1);
+
+    // Deleting matching rows changes pagination. Always query page one.
+    // Skip records that fail deletion *within this invocation* so a bad record
+    // cannot prevent later valid records from being erased. The next invocation
+    // retries any failed records, while ordinary WordPress batches make progress.
+    $failed_ids = array();
     $removed = false;
     $retained = false;
-    foreach ($query->posts as $request) {
-        if (wp_delete_post($request->ID, true)) {
-            $removed = true;
-        } else {
-            $retained = true;
+    for ($batch = 0; $batch < 5; $batch++) {
+        $query = rdb_privacy_query($email, 1, $failed_ids);
+        if (!$query->posts) {
+            break;
+        }
+        foreach ($query->posts as $request) {
+            if (wp_delete_post($request->ID, true)) {
+                $removed = true;
+            } else {
+                $retained = true;
+                $failed_ids[] = (int) $request->ID;
+            }
         }
     }
+    // If rows remain after at most five batches, WordPress will invoke this
+    // exporter/eraser again. Rows that failed are reported as retained and
+    // require an administrator's attention if they continue to fail.
+    $remaining = rdb_privacy_query($email, 1, $failed_ids);
     return array(
         'items_removed' => $removed,
         'items_retained' => $retained,
-        'messages' => $retained ? array('Certaines demandes n’ont pas pu être supprimées. Vérifiez manuellement.') : array(),
-        // Do not repeatedly retry a failed record in an endless page-one loop.
-        'done' => $retained || count($query->posts) < 25,
+        'messages' => $retained ? array('Une ou plusieurs demandes n’ont pas pu être supprimées. Vérifiez manuellement.') : array(),
+        'done' => !$remaining->posts,
     );
 }
 

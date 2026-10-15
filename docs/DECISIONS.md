@@ -23,3 +23,6 @@ Hébergement de production, chemin WordPress, SMTP, sources Operations Center, c
 
 ## D-007 — Effacement manuel contrôlé (2026-10-15)
 Un dossier sans courriel ne peut pas être retrouvé par le workflow natif WordPress fondé sur une adresse validée. L'administrateur peut le supprimer dans la console du plugin après vérification externe de l'identité et une case de confirmation. L'action est protégée par capability manage_options, POST, nonce et vérification du type de publication; aucune suppression générique hors du plugin.
+
+## D-008 — Effacement par lots résilient (2026-10-15)
+Traitement d'au plus cinq lots de 25 dossiers par invocation WordPress. La première page est réinterrogée après suppression; les dossiers non supprimables sont temporairement exclus du reste du même lot afin que les autres puissent être effacés. Les opérations plus grandes continuent à l'appel suivant. Toute défaillance est signalée.

@@ -26,7 +26,7 @@ Le répertoire plugin/ramassedebris-service contient une extension WordPress aut
 
 Les sources historiques du site ne sont pas incluses dans ce dépôt. Lire AGENTS.md, docs/PROJECT_STATUS.md, docs/TASK_QUEUE.md, docs/AGENT_HANDOFF.md et docs/DECISIONS.md avant de modifier ou déployer quoi que ce soit.
 
-Version actuelle du plugin : **0.3.0**.
+Version actuelle du plugin : **0.3.1**.
 
 ## Développement / vérification
 

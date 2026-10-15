@@ -67,4 +67,4 @@ En cas de déploiement SSH autorisé, le workflow compare maintenant l'empreinte
 
 L'administrateur WordPress qui a personnellement vérifié la légitimité d'une demande d'effacement peut ouvrir Ramasse Débris > Demandes, afficher « Supprimer cette demande », cocher la confirmation et envoyer le formulaire de suppression. Le serveur exige le rôle administrateur, un nonce, POST, le bon type de dossier et la confirmation. La suppression est définitive et ne concerne que l'entrée WordPress du plugin. Sauvegardes, copies d'alerte des versions antérieures et autres intégrations éventuelles doivent faire l'objet de procédures séparées.
 
-L'extension correspond à la version 0.3.0; la présence du fichier sur le serveur n'est pas une preuve de son activation.
+L'extension correspond à la version 0.3.1; la présence du fichier sur le serveur n'est pas une preuve de son activation. Tester les lots d'effacement volumineux et les suppressions partiellement en erreur en préproduction.

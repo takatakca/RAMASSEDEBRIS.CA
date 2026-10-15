@@ -20,8 +20,9 @@ class WP_Query {
     public function __construct($args) {
         $records = array_values($GLOBALS['rdb_test_records']);
         $email = $args['meta_query'][0]['value'];
-        $matched = array_values(array_filter($records, function ($row) use ($email) {
-            return $row['email'] === $email;
+        $excluded_ids = isset($args['post__not_in']) ? $args['post__not_in'] : array();
+        $matched = array_values(array_filter($records, function ($row) use ($email, $excluded_ids) {
+            return $row['email'] === $email && !in_array($row['id'], $excluded_ids, true);
         }));
         $offset = ((int) $args['paged'] - 1) * (int) $args['posts_per_page'];
         $matched = array_slice($matched, $offset, (int) $args['posts_per_page']);
@@ -54,7 +55,7 @@ function check($actual, $expected, $description) {
     }
 }
 
-check(RDB_VERSION, '0.3.0', 'plugin version contract');
+check(RDB_VERSION, '0.3.1', 'plugin version contract');
 check(count(rdb_services()), 5, 'service catalogue');
 check(count(rdb_volumes()), 4, 'volume catalogue');
 check(count(rdb_statuses()), 4, 'status catalogue');
@@ -127,23 +128,45 @@ check(count($export2['data']), 1, 'export second batch');
 check($export2['done'], true, 'export completed');
 
 $erase1 = rdb_erase_personal_data('test@example.org', 1);
-check($erase1['items_removed'], true, 'erasure deletes first batch');
-check($erase1['done'], false, 'erasure continues with first page again');
-$erase2 = rdb_erase_personal_data('test@example.org', 2);
-check($erase2['done'], true, 'erasure completed');
+check($erase1['items_removed'], true, 'erasure deletes valid batches');
+check($erase1['done'], true, 'erasure completed in bounded batches');
 check(count($GLOBALS['rdb_test_records']), 1, 'unrelated customer records preserved');
 check(isset($GLOBALS['rdb_test_records'][27]), true, 'unrelated customer preserved by id');
 
+// A failed deletion must not prevent the next valid row from being erased.
 $GLOBALS['rdb_test_records'][28] = array(
     'id' => 28,
+    'email' => 'blocked@example.org',
+    'meta' => array('_rdb_email' => 'blocked@example.org'),
+);
+$GLOBALS['rdb_test_records'][29] = array(
+    'id' => 29,
     'email' => 'blocked@example.org',
     'meta' => array('_rdb_email' => 'blocked@example.org'),
 );
 $GLOBALS['rdb_test_fail_delete'][] = 28;
 $failure = rdb_erase_personal_data('blocked@example.org');
 check($failure['items_retained'], true, 'erasure reports retained record');
-check($failure['done'], true, 'erasure avoids infinite reprocessing when deletion fails');
+check($failure['items_removed'], true, 'erasure removes following valid record');
+check($failure['done'], true, 'erasure avoids infinite loop on failed record');
 check(count($failure['messages']) > 0, true, 'erasure reports error');
+check(isset($GLOBALS['rdb_test_records'][28]), true, 'failed row retained');
+check(isset($GLOBALS['rdb_test_records'][29]), false, 'following valid row deleted');
+
+for ($i = 100; $i < 250; $i++) {
+    $GLOBALS['rdb_test_records'][$i] = array(
+        'id' => $i,
+        'email' => 'large@example.org',
+        'meta' => array('_rdb_email' => 'large@example.org'),
+    );
+}
+$large1 = rdb_erase_personal_data('large@example.org', 1);
+check($large1['done'], false, 'bounded erasure requests another run for large volume');
+$large2 = rdb_erase_personal_data('large@example.org', 2);
+check($large2['done'], true, 'second erasure callback finishes remaining rows');
+check(count(array_filter($GLOBALS['rdb_test_records'], function ($row) {
+    return $row['email'] === 'large@example.org';
+})), 0, 'large erasure fully cleared');
 
 $invalid_export = rdb_export_personal_data('invalid', 1);
 check($invalid_export['done'], true, 'invalid identity export completed safely');

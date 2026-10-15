@@ -4,14 +4,14 @@
 **Dépôt :** takatakca/RAMASSEDEBRIS.CA  
 **Branche :** main  
 **Dernier commit confirmé avant cette reprise :** c22619ba2b692add1609c613e699a18bb82a48d0  
-**Dernier commit poussé et vérifié pendant cette session :** 97e1ec9666299d938a04effce700f5128850adbb (CI GitHub réussie, run 38776815238). Le commit ajoutant les tests de protection du point de suppression doit être confirmé via HEAD de main.  
-**Version cible du plugin :** 0.3.0.
+**Dernier commit poussé et vérifié pendant cette session :** 2adf208da947b9f7a6772655bcbda2c8659d3069 (CI réussie, run 38777124775). La correction 0.3.1 est incluse dans le commit suivant; relever son SHA sur main.  
+**Version cible du plugin :** 0.3.1.
 
 ## Dernière tâche achevée
 Le plugin WordPress indépendant a été amélioré : validation métier testable, échec d'effacement explicitement signalé, courriel de notification sans données personnelles détaillées et effacement manuel sécurisé depuis l'interface administrateur. Les tests du formulaire et de la confidentialité ont été étendus. Les documents permanents et AGENTS.md sont ajoutés.
 
 ## Tâche en cours
-Lot 0.3.0 publié et CI réussie. Confirmer le prochain commit des tests administrateur puis corriger immédiatement tout échec. La prochaine tâche principale reste la récupération du site WordPress réel et d'Operations Center, issue #1.
+Lot 0.3.0 et tests administrateur publiés avec CI réussie. Confirmer la version 0.3.1 et les nouveaux tests, puis corriger tout échec. La prochaine tâche principale reste la récupération du site WordPress réel et d'Operations Center, issue #1.
 
 ## Fichiers concernés
 - plugin/ramassedebris-service/ramassedebris-service.php
@@ -31,7 +31,7 @@ Lot 0.3.0 publié et CI réussie. Confirmer le prochain commit des tests adminis
 ## Vérifications exécutées et à refaire
 - Lecture GitHub get_repo, arborescence, documents, commits, PR, issues #1 à #3 et workflow runs.
 - CI du commit c22619b : PHP lint, smoke, JS syntax et ZIP **réussis**.
-- CI du lot 0.2.0 : syntaxe PHP, tests métier, syntaxe JS, ZIP **réussis** (38775895581). Contrôles du commit d'inventaire : réussis (38776338377); CI 0.3.0 réussie (38776815238); tests administrateur additionnels à confirmer après push. Préproduction WordPress réelle **non disponible pour ce run**.
+- CI du lot 0.2.0 : syntaxe PHP, tests métier, syntaxe JS, ZIP **réussis** (38775895581). Contrôles du commit d'inventaire : réussis (38776338377); CI 0.3.0 réussie (38776815238); tests administrateur réussis (38777124775); CI 0.3.1 à confirmer après push. Préproduction WordPress réelle **non disponible pour ce run**.
 
 ## Recherche inter-repositories
 
