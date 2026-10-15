@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Ramasse Débris — Demandes de ramassage
  * Description: Formulaire de demande de ramassage et suivi privé dans WordPress. Aucun changement à WooCommerce.
- * Version: 0.2.0
+ * Version: 0.3.0
  * Requires at least: 6.0
  * Requires PHP: 7.4
  * Author: RAMASSE DÉBRIS MONTRÉAL
@@ -13,7 +13,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('RDB_VERSION', '0.2.0');
+define('RDB_VERSION', '0.3.0');
 define('RDB_PLUGIN_FILE', __FILE__);
 
 function rdb_services() {
@@ -462,6 +462,12 @@ function rdb_render_admin() {
     ?>
     <div class="wrap">
       <h1>Demandes de ramassage</h1>
+      <?php $result = isset($_GET['rdb_admin_result']) ? sanitize_key(wp_unslash($_GET['rdb_admin_result'])) : ''; ?>
+      <?php if ($result === 'deleted') : ?>
+        <div class="notice notice-success is-dismissible"><p>La demande a été supprimée définitivement de WordPress.</p></div>
+      <?php elseif ($result === 'updated') : ?>
+        <div class="notice notice-success is-dismissible"><p>Le statut a été mis à jour.</p></div>
+      <?php endif; ?>
       <p>Les dates demandées ne confirment pas de réservation. Les changements ici ne modifient ni les commandes WooCommerce ni les données TAKATAK.</p>
       <p><a href="<?php echo esc_url(admin_url('admin.php?page=rdb-demandes')); ?>">Toutes</a>
         <?php foreach (rdb_statuses() as $code => $label) : ?>
@@ -526,6 +532,19 @@ function rdb_render_admin() {
                 </select>
                 <button class="button button-secondary" type="submit">Mettre à jour</button>
               </form>
+              <details style="margin-top:12px">
+                <summary>Supprimer cette demande</summary>
+                <p>Suppression permanente. Vérifiez d’abord l’identité et le droit du demandeur à obtenir l’effacement.</p>
+                <form action="<?php echo esc_url(admin_url('admin-post.php')); ?>" method="post">
+                  <input type="hidden" name="action" value="rdb_delete_request">
+                  <input type="hidden" name="rdb_id" value="<?php echo esc_attr($id); ?>">
+                  <?php wp_nonce_field('rdb_delete_' . $id, 'rdb_nonce'); ?>
+                  <label><input type="checkbox" name="rdb_confirm" value="yes" required>
+                    Je confirme avoir vérifié la demande de suppression.
+                  </label>
+                  <p><button class="button button-link-delete" type="submit">Supprimer définitivement #<?php echo esc_html($id); ?></button></p>
+                </form>
+              </details>
             </td>
           </tr>
         <?php endforeach; ?>
@@ -572,6 +591,35 @@ add_action('admin_post_rdb_update_status', function () {
         // Updating post_modified also starts the completed-case retention clock.
         wp_update_post(array('ID' => $id));
     }
-    wp_safe_redirect(admin_url('admin.php?page=rdb-demandes&updated=1'), 303);
+    wp_safe_redirect(admin_url('admin.php?page=rdb-demandes&rdb_admin_result=updated'), 303);
     exit;
 });
+
+
+/**
+ * Privacy requests without an email address need an administrator-led route.
+ * This deletes only this plugin's private custom post and its post metadata.
+ */
+add_action('admin_post_rdb_delete_request', 'rdb_handle_manual_delete');
+
+function rdb_handle_manual_delete() {
+    if (!current_user_can('manage_options')) {
+        wp_die('Accès refusé.', '', array('response' => 403));
+    }
+    if (!isset($_SERVER['REQUEST_METHOD']) || $_SERVER['REQUEST_METHOD'] !== 'POST') {
+        wp_die('Méthode non autorisée.', '', array('response' => 405));
+    }
+    $id = isset($_POST['rdb_id']) ? absint($_POST['rdb_id']) : 0;
+    $nonce = isset($_POST['rdb_nonce']) && is_string($_POST['rdb_nonce'])
+        ? sanitize_text_field(wp_unslash($_POST['rdb_nonce'])) : '';
+    $confirmed = isset($_POST['rdb_confirm']) && is_string($_POST['rdb_confirm']) &&
+        wp_unslash($_POST['rdb_confirm']) === 'yes';
+    if (!$confirmed || !$id || !wp_verify_nonce($nonce, 'rdb_delete_' . $id) || get_post_type($id) !== 'rdb_demande') {
+        wp_die('Demande invalide ou confirmation manquante.', '', array('response' => 400));
+    }
+    if (!wp_delete_post($id, true)) {
+        wp_die('Échec de la suppression. Les données restent conservées.', '', array('response' => 500));
+    }
+    wp_safe_redirect(admin_url('admin.php?page=rdb-demandes&rdb_admin_result=deleted'), 303);
+    exit;
+}

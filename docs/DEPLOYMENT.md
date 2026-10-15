@@ -62,3 +62,9 @@ Cette commande ne lit pas les mots de passe ni les valeurs de wp-config.php; ell
 ## Preuve du transfert
 
 En cas de déploiement SSH autorisé, le workflow compare maintenant l'empreinte SHA-256 du fichier principal du plugin entre GitHub Actions et le serveur distant. Ce contrôle prouve uniquement le transfert identique du fichier : **il ne prouve pas que l'extension soit active ni que le site soit fonctionnel**.
+
+## Traitement des demandes de confidentialité sans adresse courriel
+
+L'administrateur WordPress qui a personnellement vérifié la légitimité d'une demande d'effacement peut ouvrir Ramasse Débris > Demandes, afficher « Supprimer cette demande », cocher la confirmation et envoyer le formulaire de suppression. Le serveur exige le rôle administrateur, un nonce, POST, le bon type de dossier et la confirmation. La suppression est définitive et ne concerne que l'entrée WordPress du plugin. Sauvegardes, copies d'alerte des versions antérieures et autres intégrations éventuelles doivent faire l'objet de procédures séparées.
+
+L'extension correspond à la version 0.3.0; la présence du fichier sur le serveur n'est pas une preuve de son activation.

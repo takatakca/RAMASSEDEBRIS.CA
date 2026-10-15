@@ -20,3 +20,6 @@ La validation métier est testée comme fonction PHP. L'effacement natif WordPre
 
 ## En suspens
 Hébergement de production, chemin WordPress, SMTP, sources Operations Center, contraintes métier exactes, politique de conservation et contrat d'API TAKATAK.
+
+## D-007 — Effacement manuel contrôlé (2026-10-15)
+Un dossier sans courriel ne peut pas être retrouvé par le workflow natif WordPress fondé sur une adresse validée. L'administrateur peut le supprimer dans la console du plugin après vérification externe de l'identité et une case de confirmation. L'action est protégée par capability manage_options, POST, nonce et vérification du type de publication; aucune suppression générique hors du plugin.

@@ -54,7 +54,7 @@ function check($actual, $expected, $description) {
     }
 }
 
-check(RDB_VERSION, '0.2.0', 'plugin version contract');
+check(RDB_VERSION, '0.3.0', 'plugin version contract');
 check(count(rdb_services()), 5, 'service catalogue');
 check(count(rdb_volumes()), 4, 'volume catalogue');
 check(count(rdb_statuses()), 4, 'status catalogue');
@@ -62,6 +62,7 @@ check(rdb_truncate('bonjour', 3), 'bon', 'text truncation');
 check(rdb_text_length('bonjour'), 7, 'text length');
 check(function_exists('rdb_export_personal_data'), true, 'WordPress privacy exporter');
 check(function_exists('rdb_erase_personal_data'), true, 'WordPress privacy eraser');
+check(function_exists('rdb_handle_manual_delete'), true, 'admin-only manual privacy deletion handler');
 
 $today = '2026-10-15';
 $valid = array(
