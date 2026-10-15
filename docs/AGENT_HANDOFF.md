@@ -4,7 +4,7 @@
 **Dépôt :** takatakca/RAMASSEDEBRIS.CA  
 **Branche :** main  
 **Dernier commit confirmé avant cette reprise :** c22619ba2b692add1609c613e699a18bb82a48d0  
-**Dernier commit publié et confirmé avant cette intervention :** 4cfa3a389fdfd77736fe04261ab1b7eff947268b (CI réussie, run 38777784395). **Dernier commit publié et testé pendant cette session :** 52aa5881142e54f5d348bd15e35ee2f9d59bd88f (run CI 38791143965 : succès; workflow_run déploiement 38791179144 : ignoré). **Lot suivant :** tests du traitement public en cours de publication; lire le SHA sur main après commit.  
+**Dernier commit publié et confirmé avant cette intervention :** 4cfa3a389fdfd77736fe04261ab1b7eff947268b (CI réussie, run 38777784395). **Dernier commit publié et testé pendant cette session :** 52aa5881142e54f5d348bd15e35ee2f9d59bd88f (run CI 38791143965 : succès; workflow_run déploiement 38791179144 : ignoré). **Lot suivant :** commit ac01593286e48f3320e211f1cdf6931345b37ea9 publié; CI 38791669042 en échec dans le simulateur de test uniquement (constante native `HOUR_IN_SECONDS` absente). Correctif de la double de test préparé; consulter la CI du commit correctif puis reprendre le chantier bloqué #1.  
 **Version cible du plugin :** 0.4.0.
 
 ## Intervention courante — 2026-10-15 (nouvelle session)
@@ -13,7 +13,7 @@
 - Plugin version 0.4.0 : le navigateur récupère un nonce frais par requête AJAX POST non mise en cache avant de soumettre un formulaire; retour d'erreur explicite sans fausse confirmation si le service est indisponible, soumission native sans JavaScript.
 - Tests ajoutés : comportement navigateur, double soumission, panne réseau, jeton invalide; PHP refresh POST/GET.
 - **CI du lot 0.4.0 :** réussie (38791143965). Le déploiement a bien été déclenché ensuite par `workflow_run`, mais son job est skipped (38791179144). Aucun transfert en production effectué.
-- Tests de traitement HTTP/PHP ajoutés dans `tests/request-case.php` et `tests/run-request-handler.sh`, intégrés à la CI et à la prévalidation du déploiement; nouvelle CI à confirmer.
+- Tests de traitement HTTP/PHP ajoutés dans `tests/request-case.php` et `tests/run-request-handler.sh`, intégrés à la CI et à la prévalidation du déploiement; nouvelle CI du correctif à confirmer.
 
 ## Dernière tâche achevée
 Le plugin WordPress indépendant a été amélioré : validation métier testable, échec d'effacement explicitement signalé, courriel de notification sans données personnelles détaillées et effacement manuel sécurisé depuis l'interface administrateur. Les tests du formulaire et de la confidentialité ont été étendus. Les documents permanents et AGENTS.md sont ajoutés.
@@ -61,3 +61,8 @@ Recherche GitHub sur les termes Ramasse Débris et Operations Center dans les d�
 3. Si CI échoue, corriger et repusher immédiatement.
 4. Sinon reprendre issue #1 depuis les sources WordPress réelles; garder issue #2 pour la validation WordPress, issue #3 pour le déploiement. Tester le renouvellement du nonce en préproduction derrière un cache/CDN.
 5. Réécrire ce rapport avec les nouveaux SHA et preuves avant de quitter.
+
+## Correction CI de la session
+- Commit `ac01593286e48f3320e211f1cdf6931345b37ea9`, run `38791669042` : échec à `Public request handler contract tests`, `Undefined constant HOUR_IN_SECONDS` dans la double de test PHP CLI. La constante existe dans WordPress; le problème est le harnais de test et non un défaut démontré de l'installation réelle.
+- Correction : ajout de `define('HOUR_IN_SECONDS', 3600)` dans `tests/request-case.php`.
+- Déploiement prod : aucun transfert effectué, le nouveau workflow n'autorise pas l'autodéploiement après une CI en échec.

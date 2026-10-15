@@ -22,7 +22,7 @@ Repository : takatakca/RAMASSEDEBRIS.CA; branche : main. Avant les changements d
 - Version 0.3.1 : effacement par lots robuste face aux dossiers impossible à supprimer. Commit 10c94a044765166481c2f5fc4843bc30c0781337; CI réussie, run 38777609101.
 - GitHub Actions Deploy isolated WordPress plugin du même commit : ignoré volontairement, production non modifiée.
 - Plugin 0.4.0 au commit 52aa5881142e54f5d348bd15e35ee2f9d59bd88f : CI **réussie**, run 38791143965; scénario `workflow_run` de déploiement observé et **ignoré volontairement**, run 38791179144.
-- Tests complémentaires du gestionnaire public de demande ajoutés (POST, nonce, honeypot, rate-limit, validité, sauvegarde privée, SMTP, échecs); résultat CI du prochain commit à vérifier.
+- Tests complémentaires du gestionnaire public ajoutés. Première exécution CI `38791669042` : échec par constante WordPress `HOUR_IN_SECONDS` manquante dans le harnais PHP; test isolé corrigé dans la livraison suivante, nouveau run à vérifier.
 - Tests WordPress réels, plugins historiques, notifications SMTP, sécurité de l'instance, restauration des sauvegardes : non vérifiés.
 - Déploiement et activation sur ramassedebris.ca : NON confirmés; le workflow de production précédent a été ignoré.
 - Intégrations WooCommerce/YITH, Operations Center et TAKATAK : hors périmètre de la version actuelle; sources et contrats à récupérer.

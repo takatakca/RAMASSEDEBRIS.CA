@@ -18,7 +18,7 @@
 
 ## Vérifications indépendantes en cours
 
-- Contrats du gestionnaire de soumission publique avec des dépendances WordPress simulées : tests livrés, à valider par GitHub Actions. Cela ne prouve pas une exécution WordPress réelle.
+- Contrats du gestionnaire de soumission publique avec des dépendances WordPress simulées : tests livrés; CI initiale rouge sur constante WordPress simulée absente, correctif préparé et à revalider. Cela ne prouve pas une exécution WordPress réelle.
 
 ## Continuité
 Sur reprise : contrôler HEAD, AGENTS.md, docs/AGENT_HANDOFF.md, status CI; corriger les échecs puis continuer la première tâche exécutable. Ne pas considérer les problèmes d'accès non résolus comme un prétexte pour simuler le système en production.

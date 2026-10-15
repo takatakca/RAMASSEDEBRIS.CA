@@ -1,6 +1,7 @@
 <?php
 // Execute the public request handler in a fresh isolated PHP process.
 define('ABSPATH', __DIR__ . '/');
+define('HOUR_IN_SECONDS', 3600);
 $scenario = $argv[1] ?? 'success';
 $allowed = array('success','invalid_method','invalid_nonce','honeypot','limited','invalid_fields','missing_consent','array_input','db_error','smtp_failure');
 if (!in_array($scenario, $allowed, true)) exit(2);
