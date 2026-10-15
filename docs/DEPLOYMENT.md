@@ -41,3 +41,12 @@ Les demandes sont enregistrées comme publications privées de type rdb_demande 
 ## Exportation et suppression sur demande
 
 Le plugin est raccordé aux outils natifs WordPress de confidentialité par adresse courriel vérifiée. Les demandes déposées sans courriel exigent une vérification d'identité et un traitement administratif séparés. Les changements de statut créent un historique d'audit interne.
+
+## Contrôles avant activation
+
+- Vérifier la version 0.2.0 dans la liste des extensions WordPress et la compatibilité des extensions existantes.
+- Envoyer une demande test : l'enregistrement doit être privé, visible uniquement aux administrateurs et le courriel d'alerte ne doit pas divulguer la description ou les coordonnées.
+- Tester l'export et l'effacement des dossiers par courriel et le signalement des erreurs de suppression; prévoir un processus manuel pour les demandes sans courriel.
+- Vérifier les protections du site (cache/CDN, nonce, honeypot, HTTP 303, SMTP, permissions) et la politique de rétention selon les obligations applicables.
+- Vérifier la santé de WordPress, les opérations WooCommerce/YITH existantes et restaurer la sauvegarde en cas de régression.
+- N'autoriser RDB_AUTO_DEPLOY que lorsque l'environnement de production, la sauvegarde et le rollback sont réellement qualifiés.

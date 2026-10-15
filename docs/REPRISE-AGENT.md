@@ -1,4 +1,6 @@
-# Relève de développement — RAMASSEDEBRIS.CA
+# Relève historique — RAMASSEDEBRIS.CA
+
+> Ce rapport décrit la reprise du 14 octobre. Pour l'état courant, utiliser AGENTS.md et docs/AGENT_HANDOFF.md (2026-10-15).
 
 ## Source de vérité inspectée le 2026-10-14
 

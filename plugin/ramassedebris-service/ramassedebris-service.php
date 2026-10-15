@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Ramasse Débris — Demandes de ramassage
  * Description: Formulaire de demande de ramassage et suivi privé dans WordPress. Aucun changement à WooCommerce.
- * Version: 0.1.0
+ * Version: 0.2.0
  * Requires at least: 6.0
  * Requires PHP: 7.4
  * Author: RAMASSE DÉBRIS MONTRÉAL
@@ -13,7 +13,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('RDB_VERSION', '0.1.0');
+define('RDB_VERSION', '0.2.0');
 define('RDB_PLUGIN_FILE', __FILE__);
 
 function rdb_services() {
@@ -123,16 +123,20 @@ function rdb_erase_personal_data($email, $page = 1) {
     // Always process the first page: deleting records shrinks the result set.
     $query = rdb_privacy_query($email, 1);
     $removed = false;
+    $retained = false;
     foreach ($query->posts as $request) {
         if (wp_delete_post($request->ID, true)) {
             $removed = true;
+        } else {
+            $retained = true;
         }
     }
     return array(
         'items_removed' => $removed,
-        'items_retained' => false,
-        'messages' => array(),
-        'done' => count($query->posts) < 25,
+        'items_retained' => $retained,
+        'messages' => $retained ? array('Certaines demandes n’ont pas pu être supprimées. Vérifiez manuellement.') : array(),
+        // Do not repeatedly retry a failed record in an endless page-one loop.
+        'done' => $retained || count($query->posts) < 25,
     );
 }
 
@@ -142,6 +146,54 @@ function rdb_truncate($value, $length) {
 
 function rdb_text_length($value) {
     return function_exists('mb_strlen') ? mb_strlen($value) : strlen($value);
+}
+
+
+/**
+ * Domain validation is shared by the live handler and executable contract tests.
+ * This does not assign prices, scheduling confirmations or customer identities.
+ */
+function rdb_validate_request_data($values, $consent, $today) {
+    $fields = array('name', 'phone', 'email', 'city', 'postal', 'service', 'volume', 'date', 'details');
+    if (!$consent || !is_array($values)) {
+        return false;
+    }
+    foreach ($fields as $field) {
+        if (!isset($values[$field]) || !is_string($values[$field])) {
+            return false;
+        }
+    }
+    if (
+        rdb_text_length($values['name']) < 2 ||
+        rdb_text_length($values['name']) > 100 ||
+        rdb_text_length($values['city']) < 2 ||
+        rdb_text_length($values['city']) > 100 ||
+        rdb_text_length($values['details']) < 10 ||
+        rdb_text_length($values['details']) > 1500 ||
+        rdb_text_length($values['email']) > 150 ||
+        !preg_match('/^[0-9+().\s-]{7,30}$/', $values['phone']) ||
+        !array_key_exists($values['service'], rdb_services()) ||
+        !array_key_exists($values['volume'], rdb_volumes()) ||
+        ($values['email'] !== '' && !is_email($values['email'])) ||
+        ($values['postal'] !== '' && !preg_match('/^[A-Z]\d[A-Z][ ]?\d[A-Z]\d$/', $values['postal']))
+    ) {
+        return false;
+    }
+    if ($values['date'] !== '') {
+        // WordPress date input is YYYY-MM-DD without a timezone suffix.
+        $parsed = DateTimeImmutable::createFromFormat('!Y-m-d', $values['date']);
+        $today_date = DateTimeImmutable::createFromFormat('!Y-m-d', $today);
+        if (
+            !$parsed ||
+            !$today_date ||
+            $parsed->format('Y-m-d') !== $values['date'] ||
+            $parsed < $today_date ||
+            $parsed > $today_date->modify('+180 days')
+        ) {
+            return false;
+        }
+    }
+    return true;
 }
 
 add_action('init', function () {
@@ -330,23 +382,7 @@ function rdb_handle_request() {
     $values['postal'] = strtoupper(trim($values['postal']));
     $consent = isset($_POST['rdb_consent']) && wp_unslash($_POST['rdb_consent']) === '1';
 
-    $valid = $consent &&
-        rdb_text_length($values['name']) >= 2 &&
-        preg_match('/^[0-9+().\s-]{7,30}$/', $values['phone']) &&
-        rdb_text_length($values['city']) >= 2 &&
-        rdb_text_length($values['details']) >= 10 &&
-        isset(rdb_services()[$values['service']]) &&
-        isset(rdb_volumes()[$values['volume']]) &&
-        (!$values['email'] || is_email($values['email'])) &&
-        (!$values['postal'] || preg_match('/^[A-Z]\d[A-Z][ ]?\d[A-Z]\d$/', $values['postal']));
-
-    if ($values['date']) {
-        $parsed = DateTimeImmutable::createFromFormat('!Y-m-d', $values['date']);
-        $valid = $valid && $parsed && $parsed->format('Y-m-d') === $values['date'];
-        $today = current_time('Y-m-d');
-        $limit = date('Y-m-d', strtotime($today . ' +180 days'));
-        $valid = $valid && $values['date'] >= $today && $values['date'] <= $limit;
-    }
+    $valid = rdb_validate_request_data($values, $consent, current_time('Y-m-d'));
     if (!$valid) {
         rdb_form_redirect('invalid');
     }
@@ -379,16 +415,11 @@ function rdb_handle_request() {
     // Do not reflect user-controlled text into an email header.
     $admin = sanitize_email(get_option('admin_email'));
     if (is_email($admin)) {
+        // Notification deliberately excludes contact details and descriptions:
+        // email is not the system of record for personal information.
         $body = "Nouvelle demande de ramassage #" . $id . "\n\n";
-        $body .= "Nom : " . $values['name'] . "\n";
-        $body .= "Téléphone : " . $values['phone'] . "\n";
-        $body .= "Courriel : " . $values['email'] . "\n";
-        $body .= "Ville : " . $values['city'] . "\n";
-        $body .= "Type : " . rdb_services()[$values['service']] . "\n";
-        $body .= "Volume : " . rdb_volumes()[$values['volume']] . "\n";
-        $body .= "Date souhaitée : " . $values['date'] . "\n";
-        $body .= "Description : " . $values['details'] . "\n\n";
-        $body .= "Consultez les demandes dans l'administration WordPress.";
+        $body .= "Connectez-vous à votre administration WordPress pour consulter et traiter la demande :\n";
+        $body .= admin_url('admin.php?page=rdb-demandes') . "\n";
         $sent = wp_mail($admin, 'Nouvelle demande de ramassage #' . $id, $body, array('Content-Type: text/plain; charset=UTF-8'));
         update_post_meta($id, '_rdb_notification_sent', $sent ? '1' : '0');
     }

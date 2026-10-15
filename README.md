@@ -14,12 +14,18 @@ Le répertoire plugin/ramassedebris-service contient une extension WordPress aut
 - Stockage privé dans WordPress; aucun compte WooCommerce créé et aucune transmission à TAKATAK par défaut.
 - Protection des formulaires (nonce, honeypot, validation serveur, limite de 5 demandes par IP/heure).
 - Tableau de suivi administrateur : nouvelle demande → contactée → planifiée → terminée.
-- Notification à l'adresse administrateur WordPress par wp_mail (nécessite SMTP opérationnel).
+- Notification sans coordonnées client à l'adresse administrateur WordPress par wp_mail (nécessite SMTP opérationnel).
 - Purge automatique des **dossiers terminés** depuis 180 jours, sans purge des demandes ouvertes.
-- Exportation et effacement des données par courriel vérifié via les outils natifs WordPress; demandes sans courriel à gérer manuellement.
+- Exportation et effacement des données par courriel vérifié via les outils natifs WordPress, avec signalement des échecs; demandes sans courriel à gérer manuellement.
 - Historique d'audit des changements de statut (date et identifiant administrateur).
 
 **Contact professionnel de référence** : 514 825-2825 — ramassedebris.ca@gmail.com — LaSalle, Montréal.
+
+## Continuité des agents
+
+Les sources historiques du site ne sont pas incluses dans ce dépôt. Lire AGENTS.md, docs/PROJECT_STATUS.md, docs/TASK_QUEUE.md, docs/AGENT_HANDOFF.md et docs/DECISIONS.md avant de modifier ou déployer quoi que ce soit.
+
+Version actuelle du plugin : **0.2.0**.
 
 ## Développement / vérification
 
