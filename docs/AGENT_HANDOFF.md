@@ -1,68 +1,57 @@
 # AGENT HANDOFF — RAMASSEDEBRIS.CA
 
-**Date de relève :** 2026-10-15  
-**Dépôt :** takatakca/RAMASSEDEBRIS.CA  
-**Branche :** main  
-**Dernier commit confirmé avant cette reprise :** c22619ba2b692add1609c613e699a18bb82a48d0  
-**Dernier commit publié et confirmé avant cette intervention :** 4cfa3a389fdfd77736fe04261ab1b7eff947268b (CI réussie, run 38777784395). **Dernier commit publié et testé pendant cette session :** 52aa5881142e54f5d348bd15e35ee2f9d59bd88f (run CI 38791143965 : succès; workflow_run déploiement 38791179144 : ignoré). **Lot suivant :** commit ac01593286e48f3320e211f1cdf6931345b37ea9 publié; CI 38791669042 en échec dans le simulateur de test uniquement (constante native `HOUR_IN_SECONDS` absente). Correctif de la double de test préparé; consulter la CI du commit correctif puis reprendre le chantier bloqué #1.  
-**Version cible du plugin :** 0.4.0.
+Date de relève : 2026-10-15
+Dépôt : takatakca/RAMASSEDEBRIS.CA
+Branche : main
+Dernier commit applicatif vérifié : 1c9adb52f88a8318e9f61a944c3ea3942e6a7337
+Dernier run CI vérifié : 38792023520 — SUCCESS
+Dernier run de déploiement : 38792081070 — SKIPPED (autodéploiement désactivé)
+Version du plugin : 0.4.0
+Dernier commit documentaire : consulter le HEAD de main après cette relève.
 
-## Intervention courante — 2026-10-15 (nouvelle session)
-- Audit à nouveau du dépôt main, du SHA, des documents permanents, des trois issues ouvertes et des exécutions GitHub Actions : le point de départ est 4cfa3a3.
-- Refactor du déclencheur de déploiement : plus de lancement parallèle au push; uniquement après un workflow de validation réussi (mode auto conditionnel), validation réexécutée en mode manuel, rejet des commits non courants et empreintes PHP/CSS/JS.
-- Plugin version 0.4.0 : le navigateur récupère un nonce frais par requête AJAX POST non mise en cache avant de soumettre un formulaire; retour d'erreur explicite sans fausse confirmation si le service est indisponible, soumission native sans JavaScript.
-- Tests ajoutés : comportement navigateur, double soumission, panne réseau, jeton invalide; PHP refresh POST/GET.
-- **CI du lot 0.4.0 :** réussie (38791143965). Le déploiement a bien été déclenché ensuite par `workflow_run`, mais son job est skipped (38791179144). Aucun transfert en production effectué.
-- Tests de traitement HTTP/PHP ajoutés dans `tests/request-case.php` et `tests/run-request-handler.sh`, intégrés à la CI et à la prévalidation du déploiement; nouvelle CI du correctif à confirmer.
+## Dernière tâche terminée
 
-## Dernière tâche achevée
-Le plugin WordPress indépendant a été amélioré : validation métier testable, échec d'effacement explicitement signalé, courriel de notification sans données personnelles détaillées et effacement manuel sécurisé depuis l'interface administrateur. Les tests du formulaire et de la confidentialité ont été étendus. Les documents permanents et AGENTS.md sont ajoutés.
+- Audit du repository, de la branche, des documents, des issues #1 à #3, des PR (aucune) et des dernières Actions.
+- Formulaire 0.4.0 : nonce WordPress renouvelé par AJAX POST avant soumission pour les pages en cache, message d'erreur explicite, soumission classique préservée sans JavaScript.
+- Déploiement SSH : déclenchement uniquement après une CI réussie sur main en mode auto, revalidation avant SSH, rejet d'un SHA devenu obsolète, empreintes PHP/CSS/JS contrôlées.
+- Tests JS du nonce frais, double soumission, pannes et soumission sans fetch.
+- Tests PHP du traitement public : méthode POST, nonce, honeypot, limite par IP, champs/consentement, sauvegarde privée, notification sans données personnelles, panne SMTP et panne de persistance.
+- Correction des doubles WordPress de tests (constante HOUR_IN_SECONDS et fonction admin_url); CI finale verte.
 
 ## Tâche en cours
-Version 0.4.0 validée en CI; nouveaux tests du gestionnaire de demande en cours de validation. La première tâche non terminée externe reste issue #1 : retrouver les sources WordPress/Operations Center avant d'intégrer l'application d'origine. La prochaine tâche principale reste la récupération du site WordPress réel et d'Operations Center, issue #1.
 
-## Fichiers concernés
+Issue #1 : récupérer les sources originales WordPress/WooCommerce et Operations Center. Aucune source historique n'a été retrouvée dans les autres repositories accessibles; ne pas la reconstruire sans inventaire.
+
+## Fichiers modifiés pendant la reprise
+
 - plugin/ramassedebris-service/ramassedebris-service.php
-- tests/smoke.php
-- tests/manual-delete-case.php
-- tests/run-manual-deletion.sh
-- README.md
-- AGENTS.md
-- docs/PROJECT_STATUS.md
-- docs/TASK_QUEUE.md
-- docs/AGENT_HANDOFF.md
-- docs/DEPLOYMENT.md
-- docs/DECISIONS.md
-- scripts/wp-audit-readonly.sh
-- .github/workflows/{validate,deploy-wordpress}.yml
 - plugin/ramassedebris-service/assets/form.js
-- tests/form.test.cjs
-- tests/request-case.php
-- tests/run-request-handler.sh
+- tests/smoke.php, tests/form.test.cjs, tests/request-case.php, tests/run-request-handler.sh
+- .github/workflows/validate.yml, .github/workflows/deploy-wordpress.yml
+- AGENTS.md, README.md
+- docs/AGENT_HANDOFF.md, docs/PROJECT_STATUS.md, docs/TASK_QUEUE.md, docs/DEPLOYMENT.md, docs/DECISIONS.md
 
-## Vérifications exécutées et à refaire
-- Lecture GitHub get_repo, arborescence, documents, commits, PR, issues #1 à #3 et workflow runs.
-- CI du commit c22619b : PHP lint, smoke, JS syntax et ZIP **réussis**.
-- CI du lot 0.2.0 : syntaxe PHP, tests métier, syntaxe JS, ZIP **réussis** (38775895581). Contrôles du commit d'inventaire : réussis (38776338377); CI 0.3.0 réussie (38776815238); tests administrateur réussis (38777124775); CI 0.3.1 réussie (38777609101). Préproduction WordPress réelle **non disponible pour ce run**.
+## Commandes et vérifications exécutées
 
-## Recherche inter-repositories
+- Inspection via GitHub : metadata, branches/main, tree récursif, commits, issues, PR, documents, workflow runs et logs.
+- CI 38791143965 : succès, plugin 0.4.0 avec tests navigateur.
+- CI 38791669042 : échec du harnais PHP, constante HOUR_IN_SECONDS non simulée.
+- CI 38791853207 : échec du harnais PHP, admin_url non simulée.
+- CI 38792023520 : succès, syntaxe PHP, tests métier, tests JS, tests de suppression et de soumission, scripts shell, empaquetage ZIP.
+- Déploiement 38792081070 : déclenché par workflow_run après succès mais skipped par configuration.
 
-Recherche GitHub sur les termes Ramasse Débris et Operations Center dans les dépôts accessibles : aucune source de l'ancien site ou des anciennes opérations n'a été retrouvée hors de ce dépôt. Le référentiel knowledgeAI documente le nom de domaine, pas le code applicatif.
+## Blocages et état du déploiement
 
-## Problèmes, statut réel et accès
-- **Déploiement : NON effectué pendant cette reprise.** Le workflow SSH précédent est skipped; l'autodéploiement est désactivé.
-- Bloqué : absence des fichiers historiques WordPress/Operations Center, sauvegarde restaurable et accès à la préproduction; chemin SSH réel non documenté et secrets GitHub Actions dédiés non confirmés.
-- Accès nécessaires sans divulguer les secrets : sauvegarde et accès WordPress administrateur, serveur SSH, répertoire WordPress, secrets RDB_DEPLOY_*, test SMTP, sources antérieures.
-- Ne jamais inventer de site en ligne, commandes WooCommerce, réservations ou synchronisation TAKATAK.
+Production NON DEPLOYÉE et NON ACTIVÉE par cette session. Cible SSH, chemin WordPress, autorisation d'installation, sauvegardes et tests de préproduction non vérifiés. L'outil de consultation externe n'a pas pu accéder au domaine pour une validation publique.
+
+Les accès nécessaires sont : export du site historique, sauvegarde restaurable, accès WordPress administrateur, préproduction, SMTP, host/user/path SSH et secrets GitHub Actions RDB_DEPLOY_* en environnement approuvé. Ne jamais enregistrer les secrets ni les données personnelles dans GitHub.
+
+TAKATAK reste l'autorité d'identité de l'écosystème; ne pas créer un deuxième référentiel client interentreprises, ni simuler les réservations WooCommerce/YITH.
 
 ## Prochaine action exacte
-1. Lire AGENTS.md, puis ce fichier et les derniers commits sur main.
-2. Vérifier le SHA courant, le résultat GitHub Actions et le contenu de la livraison 0.4.0.
-3. Si CI échoue, corriger et repusher immédiatement.
-4. Sinon reprendre issue #1 depuis les sources WordPress réelles; garder issue #2 pour la validation WordPress, issue #3 pour le déploiement. Tester le renouvellement du nonce en préproduction derrière un cache/CDN.
-5. Réécrire ce rapport avec les nouveaux SHA et preuves avant de quitter.
 
-## Correction CI de la session
-- Commit `ac01593286e48f3320e211f1cdf6931345b37ea9`, run `38791669042` : échec à `Public request handler contract tests`, `Undefined constant HOUR_IN_SECONDS` dans la double de test PHP CLI. La constante existe dans WordPress; le problème est le harnais de test et non un défaut démontré de l'installation réelle.
-- Correction : ajout de `define('HOUR_IN_SECONDS', 3600)` dans `tests/request-case.php`.
-- Déploiement prod : aucun transfert effectué, le nouveau workflow n'autorise pas l'autodéploiement après une CI en échec.
+1. Relire AGENTS.md et ce fichier, vérifier le dernier SHA sur main et les runs récents.
+2. Reprendre issue #1 avec les vraies sources WordPress et Operations Center, sans repartir de zéro.
+3. Quand les accès deviennent disponibles : inventaire en lecture seule avec scripts/wp-audit-readonly.sh, sauvegarde et restauration en préproduction, tests sur page en cache, soumission, SMTP, droits admin et confidentialité.
+4. Qualifier les secrets, l'empreinte SSH et le chemin réel; activer le déploiement autorisé; vérifier la version WordPress active et le site réel.
+5. Réactualiser ce rapport avec le prochain SHA, les preuves, blocages et action suivante.

@@ -28,3 +28,7 @@ Repository : takatakca/RAMASSEDEBRIS.CA; branche : main. Avant les changements d
 - Intégrations WooCommerce/YITH, Operations Center et TAKATAK : hors périmètre de la version actuelle; sources et contrats à récupérer.
 
 **Projet complet : NON.** Une extension livrable n'est pas une migration du site historique. Voir docs/TASK_QUEUE.md.
+
+## Contrôle final de la reprise (2026-10-15)
+
+Plugin 0.4.0, dernier commit applicatif valide : 1c9adb52f88a8318e9f61a944c3ea3942e6a7337. CI 38792023520 : SUCCESS, y compris les tests du gestionnaire de soumission après correction des doubles WordPress manquants (HOUR_IN_SECONDS et admin_url). Déploiement workflow_run 38792081070 : SKIPPED, production inchangée. Deux exécutions intermédiaires rouges (38791669042 et 38791853207) sont documentées et ont été corrigées. Aucun test de l'installation WordPress réelle ou publication sur le domaine n'est prouvé.

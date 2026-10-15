@@ -24,3 +24,7 @@
 Sur reprise : contrôler HEAD, AGENTS.md, docs/AGENT_HANDOFF.md, status CI; corriger les échecs puis continuer la première tâche exécutable. Ne pas considérer les problèmes d'accès non résolus comme un prétexte pour simuler le système en production.
 
 Issues actives : #1 (sources), #2 (préproduction/sécurité), #3 (déploiement).
+
+## État vérifié de la dernière session
+
+Contrôles du plugin 0.4.0 réussis sur 1c9adb52f88a8318e9f61a944c3ea3942e6a7337, run 38792023520. Les issues #1, #2 et #3 restent ouvertes; la prochaine tâche principale est la récupération des sources historiques du site. Les tests intégrés à WordPress et la qualification de production ne sont pas encore possibles sans ces accès.
