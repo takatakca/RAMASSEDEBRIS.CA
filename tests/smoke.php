@@ -91,17 +91,17 @@ check($plain_query['post_status'], 'private', 'admin query restricted to private
 check(isset($plain_query['meta_query']), false, 'no metadata filter when not requested');
 $status_query = rdb_admin_query_args('contacte', '', 2);
 check($status_query['paged'], 2, 'admin filter page');
-check($status_query['meta_query'][1]['key'], '_rdb_status', 'status filter metadata');
-check($status_query['meta_query'][1]['value'], 'contacte', 'status filter value');
+check($status_query['meta_query'][0]['key'], '_rdb_status', 'status filter metadata');
+check($status_query['meta_query'][0]['value'], 'contacte', 'status filter value');
 $search_query = rdb_admin_query_args('planifie', '514-555', 3);
 check($search_query['meta_query']['relation'], 'AND', 'status and contact search combined');
-check($search_query['meta_query'][2]['relation'], 'OR', 'search fields combined as OR');
-check(count($search_query['meta_query'][2]), 6, 'five searchable contact fields');
-check($search_query['meta_query'][2][1]['key'], '_rdb_name', 'name searchable');
-check($search_query['meta_query'][2][2]['key'], '_rdb_phone', 'phone searchable');
-check($search_query['meta_query'][2][3]['key'], '_rdb_email', 'email searchable');
-check($search_query['meta_query'][2][4]['key'], '_rdb_city', 'city searchable');
-check($search_query['meta_query'][2][5]['key'], '_rdb_postal', 'postal searchable');
+check($search_query['meta_query'][1]['relation'], 'OR', 'search fields combined as OR');
+check(count($search_query['meta_query'][1]), 6, 'five searchable contact fields');
+check($search_query['meta_query'][1][0]['key'], '_rdb_name', 'name searchable');
+check($search_query['meta_query'][1][1]['key'], '_rdb_phone', 'phone searchable');
+check($search_query['meta_query'][1][2]['key'], '_rdb_email', 'email searchable');
+check($search_query['meta_query'][1][3]['key'], '_rdb_city', 'city searchable');
+check($search_query['meta_query'][1][4]['key'], '_rdb_postal', 'postal searchable');
 check(rdb_admin_query_args('invalid', '', 1)['meta_query'] ?? null, null, 'unknown statuses ignored');
 
 $_SERVER['REQUEST_METHOD'] = 'POST';
