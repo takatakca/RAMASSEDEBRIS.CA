@@ -27,7 +27,7 @@ jobs:
       - name: Browser form nonce and error-state tests
         run: node tests/form.test.cjs
       - name: Read-only inventory and security test script syntax
-        run: bash -n scripts/wp-audit-readonly.sh scripts/wp-check-plugin-readonly.sh tests/run-manual-deletion.sh tests/run-request-handler.sh
+        run: bash -n scripts/wp-audit-readonly.sh scripts/wp-check-plugin-readonly.sh tests/run-manual-deletion.sh tests/run-request-handler.sh tests/run-wordpress-http.sh
       - name: Manual admin deletion security tests
         run: bash tests/run-manual-deletion.sh
       - name: Public request handler contract tests
@@ -93,3 +93,8 @@ jobs:
           set -euo pipefail
           php "$RUNNER_TEMP/wp-cli.phar" eval-file "$GITHUB_WORKSPACE/tests/wordpress-integration.php" --path="$WP_ROOT"
           bash scripts/wp-check-plugin-readonly.sh "$WP_ROOT" 0.5.1
+      - name: Real WordPress HTTP intake and nonce integration
+        env:
+          WP_ROOT: ${{ runner.temp }}/rdb-wordpress
+        shell: bash
+        run: bash tests/run-wordpress-http.sh
