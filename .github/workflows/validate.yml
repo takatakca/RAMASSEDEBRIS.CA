@@ -92,4 +92,4 @@ jobs:
         run: |
           set -euo pipefail
           php "$RUNNER_TEMP/wp-cli.phar" eval-file "$GITHUB_WORKSPACE/tests/wordpress-integration.php" --path="$WP_ROOT"
-          bash scripts/wp-check-plugin-readonly.sh "$WP_ROOT" 0.5.0
+          bash scripts/wp-check-plugin-readonly.sh "$WP_ROOT" 0.5.1

@@ -26,4 +26,4 @@ Un orchestrateur externe autorisé est indispensable pour relancer automatiqueme
 
 Pour vérifier la version réellement active sur un WordPress autorisé, en lecture seule :
 
-    bash scripts/wp-check-plugin-readonly.sh /chemin/absolu/wordpress 0.5.0
+    bash scripts/wp-check-plugin-readonly.sh /chemin/absolu/wordpress 0.5.1

@@ -1,63 +1,47 @@
 # AGENT HANDOFF — RAMASSEDEBRIS.CA
 
-**Date de relève :** 2026-10-15
-**Dépôt :** takatakca/RAMASSEDEBRIS.CA
-**Branche :** main
-**Dernier commit avec CI WordPress complète réussie avant vérification WP-CLI :** 6098f349a7df968f03c4a5cbeaf0ba18952a4328
-**Dernière CI entièrement vérifiée :** 38848878976 — SUCCESS, deux jobs; WordPress/MySQL jetables, vérification de version et d'activation par WP-CLI inclus.
-**Dernier déploiement :** run 38848457260 — SKIPPED; aucun transfert.
-**Version du plugin :** 0.5.0
-**Dernier commit de code validé :** d9de6b71e701e99589ce30eee17232805ae678de (CI 38848878976 : SUCCESS). La mise à jour documentaire de relève est un commit supplémentaire; relever son SHA courant sur main.
+**Date de relève :** 2026-10-16  
+**Repository :** takatakca/RAMASSEDEBRIS.CA  
+**Branche autorisée :** main  
+**Dernier commit HEAD vérifié avant cette session :** c1af30a7533cc5142c9fbca34f3b313ce1d7c2e7 (CI 38849030701 SUCCESS, déploiement 38849109860 SKIPPED).  
+**Version préparée :** 0.5.1.  
+**SHA de la livraison présente :** lire directement `branches/main` après le push, puisque le fichier de relève fait partie du commit.
 
 ## Dernière tâche terminée
 
-Le dépôt, la branche, les dernières issues/PR, l'ensemble des documents et les exécutions Actions ont été audités. La version 0.5.0 du plugin isole les capacités de consultation, modification et suppression du type privé rdb_demande à manage_options; elle ajoute une recherche administrateur par nom, téléphone, courriel, ville et code postal, compatible avec les statuts et la pagination. Les tests des filtres WP_Query ont été corrigés après un échec initial. Une seconde tâche de validation GitHub Actions exécute maintenant le plugin sur un WordPress/MySQL jetable et vérifie les vrais rôles WordPress, la persistance privée, les recherches, l'exportation/l'effacement et le shortcode. Les deux tâches de validation ont réussi. Un script WP-CLI read-only vérifie désormais la version et le statut actif sans modifier l'installation.
+Audit GitHub du repository, `main`, `AGENTS.md`, de cette relève, de l'arborescence et du code, des PR et issues #1 à #3 et des exécutions CI. Correction d'un défaut de validation du formulaire : auparavant les champs `name`, `phone`, `city`, `details` étaient tronqués côté serveur **avant** validation, rendant possible l'acceptation d'une requête hors limites. Une fonction `rdb_prepare_request_values` valide les types et limites de longueur après nettoyage, impose une limite de taille brute avant sanitisation et rejette les tableaux fournis dans les champs facultatifs. Les données existantes et WordPress/WooCommerce ne sont pas modifiés.
 
-## Tâche en cours
+## Tâche actuellement en cours
 
-Confirmer la CI du prochain commit intégrant scripts/wp-check-plugin-readonly.sh et les documents, corriger les éventuelles erreurs, puis reprendre issue #1 dès qu'une copie fidèle des sources WordPress/Operations Center sera disponible.
+Déployer en dépôt la version 0.5.1 et vérifier la CI PHP/JavaScript et l'intégration WordPress/MySQL jetable. Une fois la CI verte, la prochaine tâche majeure est issue #1 : retrouver et inventorier les sources historiques WordPress et Operations Center, non présentes dans ce dépôt.
 
-## Fichiers modifiés au cours de cette reprise
+## Fichiers modifiés dans cette reprise
 
-- plugin/ramassedebris-service/ramassedebris-service.php
-- tests/smoke.php
-- tests/wordpress-integration.php
-- scripts/wp-check-plugin-readonly.sh
-- .github/workflows/validate.yml
-- AGENTS.md, README.md
-- docs/AGENT_HANDOFF.md, docs/PROJECT_STATUS.md, docs/TASK_QUEUE.md, docs/DEPLOYMENT.md, docs/DECISIONS.md
+- `plugin/ramassedebris-service/ramassedebris-service.php`
+- `tests/smoke.php`, `tests/request-case.php`, `tests/run-request-handler.sh`, `tests/wordpress-integration.php`
+- `scripts/wp-check-plugin-readonly.sh`, `.github/workflows/validate.yml`
+- `README.md`, `AGENTS.md`
+- `docs/AGENT_HANDOFF.md`, `docs/PROJECT_STATUS.md`, `docs/TASK_QUEUE.md`, `docs/DEPLOYMENT.md`, `docs/DECISIONS.md`
 
-## Vérifications, commandes et preuves
+## Commandes et vérifications
 
-- GitHub API : get_repo, branches/main, arbre, issues #1/#2/#3, PR (aucune), code, documents, workflow runs, résultats CI et artefact ZIP.
-- CI 38848024103 : FAILURE des indices d'assertions de filtres de requête (corrigé).
-- CI 38848126133 : SUCCESS sur commit 1a41b8589a96063724cff9e1d131b6735ea845f5.
-- CI 38848368743 : SUCCESS sur commit 6098f349a7df968f03c4a5cbeaf0ba18952a4328; jobs validate et wordpress-integration, WordPress/MySQL éphémères, ZIP du plugin présent.
-- Déploiement 38848457260 : SKIPPED; le workflow est correctement bloqué lorsque RDB_AUTO_DEPLOY n'est pas activé.
-- CI 38848878976 confirmée : bash -n scripts/wp-check-plugin-readonly.sh et bash scripts/wp-check-plugin-readonly.sh sur WordPress jetable 0.5.0 ACTIVE, SUCCESS.
-- Aucune vérification sur le vrai WordPress, SMTP, CDN ou ses extensions tierces n'est effectuée.
+- Lecture du dépôt, HEAD `main`, fichiers de relève, du plugin, des tests, de la configuration CI, des issues et des workflows via GitHub.
+- CI précédente `38849030701` : SUCCESS (deux jobs incluant WP-CLI et WordPress/MySQL réels mais temporaires).
+- Correctif 0.5.1 : tests PHP des tailles et des types, tests du gestionnaire de formulaire en processus isolés, intégration WordPress et ZIP. **Résultat de la nouvelle CI non encore confirmé au moment de rédaction de ce fichier** : vérifier immédiatement sur GitHub.
+- Déploiement production : NE PAS activer automatiquement, vérifier son état par les runs GitHub.
 
-## Problèmes et déploiement réel
+## Blocages et statut du déploiement
 
-**Production : NON déployée ni activée par cette reprise.** Le plugin fonctionnant dans le WordPress jetable de GitHub Actions ne prouve pas le fonctionnement du site existant. Le site historique, son code source, les extensions WooCommerce/YITH, les réservations et l'Operations Center ne sont pas dans le dépôt.
+**Pas de déploiement WordPress réel vérifié.** La CI exécute WordPress/MySQL éphémères, pas le site historique. Les sources WordPress/WooCommerce et Operations Center n'ont pas été retrouvées dans les dépôts accessibles. Les issues #1 (sources originales), #2 (préproduction, sauvegardes, essais réels) et #3 (SSH isolé, secrets et approbation) demeurent ouvertes.
 
-## Accès nécessaires sans exposer de secrets
+Accès nécessaires, sans secrets dans Git : export des fichiers historiques et du schéma utiles, sauvegarde restaurable, préproduction fidèle, WP Admin et WP-CLI autorisé, test SMTP/CDN, chemin et hôte SSH confirmés, clés et empreinte SSH dans l'environnement GitHub `production`. Ne jamais supposer que MochaHost ou Coolify héberge ce site avant inventaire.
 
-- Issue #1 : sauvegarde et sources réelles WordPress/Operations Center, contrats des fonctionnalités antérieures.
-- Issue #2 : préproduction fidèle avec sauvegarde restaurable, accès administrateur, audit Wordfence/Elementor/WooCommerce/YITH, tests SMTP, CDN et fonctionnement de bout en bout.
-- Issue #3 : cible SSH, utilisateur, port, chemin du plugin et empreinte SSH vérifiés; secrets RDB_DEPLOY_* dans l'environnement GitHub production avec approbation.
-- Respecter TAKATAK comme identité centrale et isoler les données de chaque entreprise; aucune intégration inventée, projet Supabase payant ou migration destructive.
+TAKATAK reste l'autorité d'identité de l'écosystème. Aucune connexion inter-tenant, réservation ou facturation fictive n'a été ajoutée.
 
 ## Prochaine action exacte
 
-1. Lire AGENTS.md et ce document, vérifier HEAD de main et les derniers résultats Actions.
-2. Si le nouveau job WP-CLI est en échec, lire les logs et corriger; ne pas publier automatiquement une CI rouge.
-3. Reprendre issue #1 avec les sources WordPress historiques lorsqu'elles deviennent disponibles, sans repartir de zéro.
-4. Après qualification d'une préproduction : utiliser scripts/wp-audit-readonly.sh et scripts/wp-check-plugin-readonly.sh /chemin/absolu/wordpress 0.5.0; tester rôles, cache, SMTP, confidentialité et WooCommerce/YITH.
-5. Avec secrets et cible validés, déployer uniquement le plugin et vérifier version active + parcours métier. Inscrire les preuves et le SHA ici avant toute autre relève.
-
-## Résolution d'une erreur CI (script d'activation)
-
-- L'installation WordPress éphémère et l'intégration ont réussi sur 8b4378f, mais le script en lecture seule ne trouvait pas la commande wp. Le PHAR existe sous RUNNER_TEMP et non dans le PATH, d'où le run 38848720866 en échec.
-- Correctif : création d'un wrapper wp dans RUNNER_TEMP/bin et ajout au GITHUB_PATH avant l'étape de vérification. Aucun accès production et aucune donnée utilisateur.
-- Le correctif du runner WP-CLI est validé : run 38848878976 SUCCESS. Le prochain agent doit reprendre la source WordPress historique issue #1.
+1. Lire `AGENTS.md` et ce fichier; vérifier le SHA courant de `main`, son CI et son run de déploiement.
+2. Si la nouvelle CI est rouge, lire les logs et corriger sans contourner les garde-fous.
+3. Avec les vraies sources et accès, reprendre issue #1; ne jamais recréer WordPress/WooCommerce de zéro.
+4. En préproduction vérifiée, lancer `bash scripts/wp-audit-readonly.sh /chemin/wordpress` puis `bash scripts/wp-check-plugin-readonly.sh /chemin/wordpress 0.5.1`, tester le formulaire, les rôles, la confidentialité, SMTP/CDN et les réservations WooCommerce.
+5. Ne déclarer la publication sur ramassedebris.ca réussie qu'après transfert et tests sur le serveur réel; mettre à jour ce journal avec les preuves.

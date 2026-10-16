@@ -13,7 +13,7 @@ function rdb_ci_assert($condition, $message) {
     }
 }
 rdb_ci_assert(in_array('ramassedebris-service/ramassedebris-service.php', (array) get_option('active_plugins'), true), 'local plugin activated');
-rdb_ci_assert(defined('RDB_VERSION') && RDB_VERSION === '0.5.0', 'plugin version');
+rdb_ci_assert(defined('RDB_VERSION') && RDB_VERSION === '0.5.1', 'plugin version');
 
 $post_type = get_post_type_object('rdb_demande');
 rdb_ci_assert($post_type !== null, 'private request type registered');

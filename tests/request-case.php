@@ -3,7 +3,7 @@
 define('ABSPATH', __DIR__ . '/');
 define('HOUR_IN_SECONDS', 3600);
 $scenario = $argv[1] ?? 'success';
-$allowed = array('success','invalid_method','invalid_nonce','honeypot','limited','invalid_fields','missing_consent','array_input','db_error','smtp_failure');
+$allowed = array('success','invalid_method','invalid_nonce','honeypot','limited','invalid_fields','missing_consent','array_input','array_optional','oversized_name','oversized_details','huge_payload','db_error','smtp_failure');
 if (!in_array($scenario, $allowed, true)) exit(2);
 $GLOBALS['scenario'] = $scenario;
 $GLOBALS['saved'] = null;
@@ -28,6 +28,11 @@ $_POST = array(
 );
 if ($scenario === 'invalid_fields') $_POST['rdb_phone'] = 'abc';
 if ($scenario === 'array_input') $_POST['rdb_details'] = array('unexpected');
+if ($scenario === 'array_optional') $_POST['rdb_email'] = array('unexpected');
+if ($scenario === 'oversized_name') $_POST['rdb_name'] = str_repeat('a', 101);
+if ($scenario === 'oversized_details') $_POST['rdb_details'] = str_repeat('x', 1501);
+if ($scenario === 'huge_payload') $_POST['rdb_details'] = str_repeat('x', 100000);
+
 
 function add_filter() {}
 function add_action() {}

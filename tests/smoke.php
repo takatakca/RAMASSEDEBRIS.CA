@@ -64,7 +64,7 @@ function check($actual, $expected, $description) {
     }
 }
 
-check(RDB_VERSION, '0.5.0', 'plugin version contract');
+check(RDB_VERSION, '0.5.1', 'plugin version contract');
 
 foreach ($GLOBALS['rdb_test_actions']['init'] as $callback) { $callback(); }
 $registered = $GLOBALS['rdb_registered_types']['rdb_demande'];
@@ -127,6 +127,34 @@ $valid = array(
     'date' => '2026-11-10',
     'details' => 'Un canapé, une commode et deux chaises.',
 );
+
+// Request preprocessing must not change overlong input into valid data.
+function wp_unslash($value) { return $value; }
+function sanitize_text_field($value) { return trim($value); }
+function sanitize_textarea_field($value) { return trim($value); }
+$posted = array();
+foreach ($valid as $key => $value) { $posted['rdb_' . $key] = $value; }
+check(rdb_prepare_request_values($posted), $valid, 'prepared form fields preserve values');
+foreach (array('name' => 101, 'city' => 101, 'details' => 1501, 'phone' => 31, 'email' => 151) as $field => $too_long) {
+    $candidate = $posted;
+    $candidate['rdb_' . $field] = str_repeat('x', $too_long);
+    check(rdb_prepare_request_values($candidate), false, 'preprocessing rejects oversized ' . $field);
+}
+foreach (array('email', 'date', 'postal', 'details') as $field) {
+    $candidate = $posted;
+    $candidate['rdb_' . $field] = array('unexpected');
+    check(rdb_prepare_request_values($candidate), false, 'preprocessing rejects array ' . $field);
+}
+$max_name = $posted;
+$max_name['rdb_name'] = str_repeat('a', 100);
+check(rdb_prepare_request_values($max_name) !== false, true, 'maximal valid name preserved');
+$max_details = $posted;
+$max_details['rdb_details'] = str_repeat('d', 1500);
+check(rdb_prepare_request_values($max_details) !== false, true, 'maximal valid details preserved');
+$oversized_payload = $posted;
+$oversized_payload['rdb_details'] = str_repeat('d', 100000);
+check(rdb_prepare_request_values($oversized_payload), false, 'oversized payload rejected before sanitization');
+
 check(rdb_validate_request_data($valid, true, $today), true, 'valid customer intake');
 check(rdb_validate_request_data($valid, false, $today), false, 'requires consent');
 

@@ -44,3 +44,10 @@ Contrôles du plugin 0.4.0 réussis sur 1c9adb52f88a8318e9f61a944c3ea3942e6a7337
 - [x] Tests d'intégration WordPress/MySQL réellement exécutés en CI : run 38848368743 réussi.
 - [x] Valider le script WP-CLI sur le runner WordPress CI, version 0.5.0 active : run 38848878976 SUCCESS; production toujours inaccessible.
 - [ ] Répéter la vérification sur la préproduction historique avec les vraies extensions et les sauvegardes.
+
+## Correctif exécutable du 2026-10-16
+
+- [x] Éliminer la troncature silencieuse des champs POST et rejeter les types non scalaires, y compris optionnels (plugin 0.5.1).
+- [x] Ajouter tests de dépassement, champs facultatifs en tableaux et requête surdimensionnée au gestionnaire de soumission.
+- [ ] Confirmer CI et génération ZIP du commit 0.5.1, corriger en cas d'échec.
+- [ ] Essayer le formulaire sur un clone réel du WordPress historique quand sources, sauvegarde et accès seront disponibles.

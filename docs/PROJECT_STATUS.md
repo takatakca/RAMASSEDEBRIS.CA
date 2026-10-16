@@ -55,3 +55,10 @@ Un deuxième job du workflow `Validate and package WordPress extension` installe
 - Le commit `d9de6b71e701e99589ce30eee17232805ae678de` a passé la CI GitHub `38848878976` : `validate` SUCCESS et `wordpress-integration` SUCCESS. Le plugin 0.5.0 a été activé et sa version contrôlée sur un WordPress jetable.
 - Le premier essai `38848720866` avait échoué : WP-CLI non exposé au PATH du runner; erreur corrigée et traçable dans GitHub.
 - La cible WordPress historique et son activation réelle demeurent **non vérifiées**; aucune publication de production n'est déduite de cette réussite CI.
+
+## Reprise et correctif du 2026-10-16
+
+- Base confirmée : `main` au commit `c1af30a7533cc5142c9fbca34f3b313ce1d7c2e7`, CI `38849030701` réussie sur les deux jobs, déploiement `38849109860` ignoré volontairement.
+- Problème découvert : le traitement POST tronquait nom, téléphone, ville et description avant la validation; les limites pouvaient être contournées en envoyant directement des données trop longues. Un champ facultatif de type tableau pouvait aussi être traité comme absent.
+- Correctif version 0.5.1 : préparation centralisée, rejet de champs non scalaires, rejet des valeurs trop longues sans troncature et limite de taille brute; tests PHP des frontières et de la soumission réelle du gestionnaire, vérifications WordPress CI intégrées. **CI de ce lot : à vérifier après le push.**
+- Hébergement WordPress historique, sauvegardes, comptes administrateurs et secrets SSH dédiés toujours non confirmés. Aucune prétention de déploiement production.

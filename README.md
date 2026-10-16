@@ -26,7 +26,7 @@ Le répertoire plugin/ramassedebris-service contient une extension WordPress aut
 
 Les sources historiques du site ne sont pas incluses dans ce dépôt. Lire AGENTS.md, docs/PROJECT_STATUS.md, docs/TASK_QUEUE.md, docs/AGENT_HANDOFF.md et docs/DECISIONS.md avant de modifier ou déployer quoi que ce soit.
 
-Version actuelle du plugin : **0.5.0**.
+Version actuelle du plugin : **0.5.1**.
 
 ## Développement / vérification
 
@@ -69,6 +69,10 @@ Le workflow de validation comprend aussi une instance **jetable** de WordPress/M
 
 Après un déploiement autorisé sur un environnement WordPress existant, exécuter sans privilèges root :
 
-    bash scripts/wp-check-plugin-readonly.sh /chemin/absolu/wordpress 0.5.0
+    bash scripts/wp-check-plugin-readonly.sh /chemin/absolu/wordpress 0.5.1
 
 Cette commande ne modifie rien; elle exige la version annoncée et le statut actif. Les tests automatisés WordPress/MySQL jetables ont réussi (run 38848368743), sans toucher au site historique.
+
+## Validation des données (0.5.1)
+
+Les champs mal formés, trop longs ou fournis sous forme de tableaux PHP sont maintenant rejetés avant l'écriture des demandes. Les anciennes limites HTML étaient déjà présentes, mais le serveur tronquait silencieusement certains champs avant la validation. L'interface et les enregistrements existants restent inchangés; les essais automatisés vérifient les limites et les données facultatives.

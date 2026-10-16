@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 # Read-only release verification. Never activates, deletes or updates plugins.
-# Usage: bash scripts/wp-check-plugin-readonly.sh /absolute/wordpress/root 0.5.0
+# Usage: bash scripts/wp-check-plugin-readonly.sh /absolute/wordpress/root 0.5.1
 set -euo pipefail
 
 ROOT="${1:-}"
-EXPECTED="${2:-0.5.0}"
+EXPECTED="${2:-0.5.1}"
 if [[ -z "$ROOT" || "$ROOT" != /* || ! -f "$ROOT/wp-load.php" || ! -d "$ROOT/wp-includes" ]]; then
   echo "ERROR: Provide the verified absolute root of an existing WordPress install." >&2
   exit 2

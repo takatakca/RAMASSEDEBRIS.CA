@@ -48,3 +48,7 @@ Le workflow de validation installe un WordPress et un MySQL éphémères, sans c
 ## D-015 — Vérification de publication non destructive (2026-10-15)
 
 Un script WP-CLI en lecture seule contrôle la version et l'activation du plugin sur un WordPress dont le chemin est explicitement connu. Il est testé sur une installation CI jetable, sans secrets ni données de production. La réussite du test CI ne suffit pas à déclarer le site historique déployé.
+
+## D-016 — Refuser plutôt que tronquer les demandes invalides (2026-10-16)
+
+Le serveur applique les mêmes limites de longueur que les contrôles métier, après sanitisation et avant toute écriture WordPress. Les valeurs non scalaires et les gros corps de champ sont rejetés, y compris pour les champs optionnels. Les entrées ne sont plus tronquées automatiquement pour contourner les règles de validation. Ce changement ne modifie pas les métadonnées déjà stockées ni l'interface des autres services.

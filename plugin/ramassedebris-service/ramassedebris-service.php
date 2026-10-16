@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Ramasse Débris — Demandes de ramassage
  * Description: Formulaire de demande de ramassage et suivi privé dans WordPress. Aucun changement à WooCommerce.
- * Version: 0.5.0
+ * Version: 0.5.1
  * Requires at least: 6.0
  * Requires PHP: 7.4
  * Author: RAMASSE DÉBRIS MONTRÉAL
@@ -13,7 +13,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('RDB_VERSION', '0.5.0');
+define('RDB_VERSION', '0.5.1');
 define('RDB_PLUGIN_FILE', __FILE__);
 
 function rdb_services() {
@@ -398,6 +398,53 @@ function rdb_form_redirect($code) {
     exit;
 }
 
+/**
+ * Read posted fields without silently truncating invalid customer input.
+ * A hostile caller may bypass the browser maxlength rules, so reject
+ * non-scalar values and impose a conservative byte budget before sanitizing.
+ * Business validation then enforces character lengths on cleaned values.
+ *
+ * Optional fields must also be strings if supplied; an array is not an
+ * acceptable substitute for an omitted email, date or postal code.
+ */
+function rdb_prepare_request_values($post) {
+    if (!is_array($post)) {
+        return false;
+    }
+    $limits = array(
+        'name' => 100,
+        'phone' => 30,
+        'email' => 150,
+        'city' => 100,
+        'postal' => 7,
+        'service' => 32,
+        'volume' => 32,
+        'date' => 10,
+        'details' => 1500,
+    );
+    $values = array();
+    foreach ($limits as $field => $max_characters) {
+        $key = 'rdb_' . $field;
+        if (isset($post[$key]) && !is_string($post[$key])) {
+            return false;
+        }
+        $raw = isset($post[$key]) ? wp_unslash($post[$key]) : '';
+        // Up to four bytes per Unicode code point plus limited markup/slashes;
+        // never spend CPU sanitizing an arbitrarily large untrusted value.
+        if (!is_string($raw) || strlen($raw) > (4 * $max_characters + 256)) {
+            return false;
+        }
+        $clean = $field === 'details' ? sanitize_textarea_field($raw) : sanitize_text_field($raw);
+        if (rdb_text_length($clean) > $max_characters) {
+            return false;
+        }
+        $values[$field] = $clean;
+    }
+    $values['email'] = sanitize_email($values['email']);
+    $values['postal'] = strtoupper(trim($values['postal']));
+    return $values;
+}
+
 add_action('admin_post_nopriv_rdb_submit_request', 'rdb_handle_request');
 add_action('admin_post_rdb_submit_request', 'rdb_handle_request');
 
@@ -421,21 +468,11 @@ function rdb_handle_request() {
         rdb_form_redirect('limited');
     }
 
-    $values = array();
-    foreach (array('name', 'phone', 'email', 'city', 'postal', 'service', 'volume', 'date', 'details') as $field) {
-        $raw = isset($_POST['rdb_' . $field]) && is_string($_POST['rdb_' . $field]) ? wp_unslash($_POST['rdb_' . $field]) : '';
-        $values[$field] = $field === 'details' ? sanitize_textarea_field($raw) : sanitize_text_field($raw);
-    }
-    $values['name'] = rdb_truncate($values['name'], 100);
-    $values['phone'] = rdb_truncate($values['phone'], 30);
-    $values['city'] = rdb_truncate($values['city'], 100);
-    $values['details'] = rdb_truncate($values['details'], 1500);
-    $values['email'] = sanitize_email($values['email']);
-    $values['postal'] = strtoupper(trim($values['postal']));
-    $consent = isset($_POST['rdb_consent']) && wp_unslash($_POST['rdb_consent']) === '1';
+    $values = rdb_prepare_request_values($_POST);
+    $consent = isset($_POST['rdb_consent']) && is_string($_POST['rdb_consent']) &&
+        wp_unslash($_POST['rdb_consent']) === '1';
 
-    $valid = rdb_validate_request_data($values, $consent, current_time('Y-m-d'));
-    if (!$valid) {
+    if ($values === false || !rdb_validate_request_data($values, $consent, current_time('Y-m-d'))) {
         rdb_form_redirect('invalid');
     }
 
