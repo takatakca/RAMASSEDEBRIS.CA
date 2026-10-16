@@ -52,3 +52,11 @@ Un script WP-CLI en lecture seule contrôle la version et l'activation du plugin
 ## D-016 — Refuser plutôt que tronquer les demandes invalides (2026-10-16)
 
 Le serveur applique les mêmes limites de longueur que les contrôles métier, après sanitisation et avant toute écriture WordPress. Les valeurs non scalaires et les gros corps de champ sont rejetés, y compris pour les champs optionnels. Les entrées ne sont plus tronquées automatiquement pour contourner les règles de validation. Ce changement ne modifie pas les métadonnées déjà stockées ni l'interface des autres services.
+
+## D-017 — Échec de notification observable (2026-10-16)
+
+Le formulaire confirme uniquement l'enregistrement de la demande, pas la réception du courriel d'alerte. La métadonnée `_rdb_notification_sent` vaut toujours `1` si `wp_mail` confirme un envoi, `0` si le serveur refuse l'envoi ou si l'adresse administrateur n'est pas valide. Cette information est accessible seulement dans la console admin; aucun détail privé n'est transmis par les notifications.
+
+## D-018 — Essais HTTP sur WordPress jetable (2026-10-16)
+
+La CI exécute les requêtes HTTP contre un serveur PHP local et un WordPress/MySQL temporaires; le script interdit explicitement les chemins hors du répertoire CI. Ces essais incluent l'endpoint AJAX de nonce, le vrai POST et l'enregistrement privé. Ils ne prouvent pas la compatibilité de la production historique avec cache, Wordfence, WooCommerce ou SMTP.

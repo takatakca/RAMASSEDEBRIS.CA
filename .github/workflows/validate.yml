@@ -92,7 +92,7 @@ jobs:
         run: |
           set -euo pipefail
           php "$RUNNER_TEMP/wp-cli.phar" eval-file "$GITHUB_WORKSPACE/tests/wordpress-integration.php" --path="$WP_ROOT"
-          bash scripts/wp-check-plugin-readonly.sh "$WP_ROOT" 0.5.1
+          bash scripts/wp-check-plugin-readonly.sh "$WP_ROOT" 0.5.2
       - name: Real WordPress HTTP intake and nonce integration
         env:
           WP_ROOT: ${{ runner.temp }}/rdb-wordpress

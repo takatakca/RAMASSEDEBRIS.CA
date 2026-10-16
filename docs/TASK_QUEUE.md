@@ -51,3 +51,10 @@ Contrôles du plugin 0.4.0 réussis sur 1c9adb52f88a8318e9f61a944c3ea3942e6a7337
 - [x] Ajouter tests de dépassement, champs facultatifs en tableaux et requête surdimensionnée au gestionnaire de soumission.
 - [ ] Confirmer CI et génération ZIP du commit 0.5.1, corriger en cas d'échec.
 - [ ] Essayer le formulaire sur un clone réel du WordPress historique quand sources, sauvegarde et accès seront disponibles.
+
+## Nouvelle avancée — 2026-10-16
+
+- [x] Contrôles HTTP réellement exécutés contre un WordPress jetable (AJAX, CSRF, dépassements, honeypot, demande privée) : CI `38950507500` réussie.
+- [x] Corriger le signalement d'alerte non envoyée quand l'adresse administrateur WordPress est invalide (plugin 0.5.2, tests du gestionnaire).
+- [ ] Contrôler la CI du commit 0.5.2, l'artefact et le run de déploiement.
+- [ ] Réaliser les tests SMTP et la vérification WordPress historique dès que la préproduction et ses sauvegardes sont disponibles.

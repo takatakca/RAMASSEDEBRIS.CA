@@ -3,7 +3,7 @@
 define('ABSPATH', __DIR__ . '/');
 define('HOUR_IN_SECONDS', 3600);
 $scenario = $argv[1] ?? 'success';
-$allowed = array('success','invalid_method','invalid_nonce','honeypot','limited','invalid_fields','missing_consent','array_input','array_optional','oversized_name','oversized_details','huge_payload','db_error','smtp_failure');
+$allowed = array('success','invalid_method','invalid_nonce','honeypot','limited','invalid_fields','missing_consent','array_input','array_optional','oversized_name','oversized_details','huge_payload','db_error','smtp_failure','invalid_admin_email');
 if (!in_array($scenario, $allowed, true)) exit(2);
 $GLOBALS['scenario'] = $scenario;
 $GLOBALS['saved'] = null;
@@ -59,7 +59,7 @@ function wp_insert_post($data, $wp_error = false) {
     $GLOBALS['saved'] = $data;
     return 42;
 }
-function get_option($key) { return $key === 'admin_email' ? 'admin@example.test' : ''; }
+function get_option($key) { return $key === 'admin_email' ? ($GLOBALS['scenario'] === 'invalid_admin_email' ? 'not-an-email' : 'admin@example.test') : ''; }
 function admin_url($path) { return 'https://test.example/wp-admin/' . $path; }
 function wp_mail($to, $subject, $body, $headers) {
     $GLOBALS['mail'] = array($to, $subject, $body);

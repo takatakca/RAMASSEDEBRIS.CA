@@ -22,4 +22,5 @@ test_case huge_payload 'RESULT:invalid|SAVED:0|PRIVATE:0|MAIL:0|MAIL_SAFE:0|THRO
 test_case db_error 'RESULT:error|SAVED:0|PRIVATE:0|MAIL:0|MAIL_SAFE:0|THROTTLED:0|DELIVERY:-'
 test_case success 'RESULT:sent|SAVED:1|PRIVATE:1|MAIL:1|MAIL_SAFE:1|THROTTLED:1|DELIVERY:1'
 test_case smtp_failure 'RESULT:sent|SAVED:1|PRIVATE:1|MAIL:1|MAIL_SAFE:1|THROTTLED:1|DELIVERY:0'
+test_case invalid_admin_email 'RESULT:sent|SAVED:1|PRIVATE:1|MAIL:0|MAIL_SAFE:0|THROTTLED:1|DELIVERY:0'
 echo "PASS: request intake, validation, notification and failure handling"

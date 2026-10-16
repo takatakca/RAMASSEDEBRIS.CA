@@ -26,7 +26,7 @@ Le répertoire plugin/ramassedebris-service contient une extension WordPress aut
 
 Les sources historiques du site ne sont pas incluses dans ce dépôt. Lire AGENTS.md, docs/PROJECT_STATUS.md, docs/TASK_QUEUE.md, docs/AGENT_HANDOFF.md et docs/DECISIONS.md avant de modifier ou déployer quoi que ce soit.
 
-Version actuelle du plugin : **0.5.1**.
+Version actuelle du plugin : **0.5.2**.
 
 ## Développement / vérification
 
@@ -69,10 +69,18 @@ Le workflow de validation comprend aussi une instance **jetable** de WordPress/M
 
 Après un déploiement autorisé sur un environnement WordPress existant, exécuter sans privilèges root :
 
-    bash scripts/wp-check-plugin-readonly.sh /chemin/absolu/wordpress 0.5.1
+    bash scripts/wp-check-plugin-readonly.sh /chemin/absolu/wordpress 0.5.2
 
 Cette commande ne modifie rien; elle exige la version annoncée et le statut actif. Les tests automatisés WordPress/MySQL jetables ont réussi (run 38848368743), sans toucher au site historique.
 
-## Validation des données (0.5.1)
+## Validation des données (0.5.2)
 
 Les champs mal formés, trop longs ou fournis sous forme de tableaux PHP sont maintenant rejetés avant l'écriture des demandes. Les anciennes limites HTML étaient déjà présentes, mais le serveur tronquait silencieusement certains champs avant la validation. L'interface et les enregistrements existants restent inchangés; les essais automatisés vérifient les limites et les données facultatives.
+
+## État des alertes administrateur (0.5.2)
+
+Quand l'adresse administrateur WordPress est invalide, l'enregistrement client est conservé mais l'alerte est marquée comme non envoyée (`_rdb_notification_sent=0`). Le tableau d'administration affiche alors un avertissement de configuration SMTP. Une défaillance de `wp_mail` produit le même état observable. Le courriel ne contient toujours aucune description ni coordonnée client.
+
+## Essais HTTP WordPress automatisés
+
+Le script `tests/run-wordpress-http.sh` démarre un serveur PHP local uniquement sur le WordPress CI temporaire, demande un jeton AJAX, teste les rejets CSRF/champs trop longs/tableaux, le honeypot et une soumission valide, puis confirme sa persistance privée. Run validé : 38950507500. Il refuse tout chemin différent de l'installation CI éphémère.

@@ -62,3 +62,10 @@ Un deuxième job du workflow `Validate and package WordPress extension` installe
 - Problème découvert : le traitement POST tronquait nom, téléphone, ville et description avant la validation; les limites pouvaient être contournées en envoyant directement des données trop longues. Un champ facultatif de type tableau pouvait aussi être traité comme absent.
 - Correctif version 0.5.1 : préparation centralisée, rejet de champs non scalaires, rejet des valeurs trop longues sans troncature et limite de taille brute; tests PHP des frontières et de la soumission réelle du gestionnaire, vérifications WordPress CI intégrées. **CI de ce lot : à vérifier après le push.**
 - Hébergement WordPress historique, sauvegardes, comptes administrateurs et secrets SSH dédiés toujours non confirmés. Aucune prétention de déploiement production.
+
+## Reprise du 2026-10-16 — preuves CI
+
+- Validation stricte sans troncature : commit `ccf9a38aa5f6b1cceb6a093d00284d6839f781c5`, run `38950002117` **SUCCESS** (deux jobs).
+- Tests HTTP réels sur le WordPress/MySQL éphémère : le premier commit `56b852997537efc6bceef93896fc979fe7223ff3` avait une erreur de syntaxe des arguments curl facultatifs (`38950313111` FAILED), corrigée dans `84b8fa887db6108701dac40de0028d504543b703`. Run `38950507500` **SUCCESS** (PHP/JS/ZIP et WP/HTTP). Déploiement `38950644731` **SKIPPED**.
+- Nouvelle version 0.5.2 : l'absence d'adresse courriel administrateur valide est enregistrée comme échec d'avis (`_rdb_notification_sent=0`) au lieu de rester invisible. Cas de test ajouté. **Nouvelle CI à vérifier après push.**
+- Sources historiques, sauvegarde restaurable, préproduction réelle et SSH restent indisponibles/non vérifiés : aucune preuve de mise en ligne.

@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Ramasse Débris — Demandes de ramassage
  * Description: Formulaire de demande de ramassage et suivi privé dans WordPress. Aucun changement à WooCommerce.
- * Version: 0.5.1
+ * Version: 0.5.2
  * Requires at least: 6.0
  * Requires PHP: 7.4
  * Author: RAMASSE DÉBRIS MONTRÉAL
@@ -13,7 +13,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('RDB_VERSION', '0.5.1');
+define('RDB_VERSION', '0.5.2');
 define('RDB_PLUGIN_FILE', __FILE__);
 
 function rdb_services() {
@@ -503,6 +503,7 @@ function rdb_handle_request() {
 
     // Do not reflect user-controlled text into an email header.
     $admin = sanitize_email(get_option('admin_email'));
+    $sent = false;
     if (is_email($admin)) {
         // Notification deliberately excludes contact details and descriptions:
         // email is not the system of record for personal information.
@@ -510,8 +511,10 @@ function rdb_handle_request() {
         $body .= "Connectez-vous à votre administration WordPress pour consulter et traiter la demande :\n";
         $body .= admin_url('admin.php?page=rdb-demandes') . "\n";
         $sent = wp_mail($admin, 'Nouvelle demande de ramassage #' . $id, $body, array('Content-Type: text/plain; charset=UTF-8'));
-        update_post_meta($id, '_rdb_notification_sent', $sent ? '1' : '0');
     }
+    // Never leave an unobservable state when the admin address is invalid:
+    // the stored request remains valid, but its alert needs human attention.
+    update_post_meta($id, '_rdb_notification_sent', $sent ? '1' : '0');
     rdb_form_redirect('sent');
 }
 

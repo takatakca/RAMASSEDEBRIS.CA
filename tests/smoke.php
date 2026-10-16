@@ -64,7 +64,7 @@ function check($actual, $expected, $description) {
     }
 }
 
-check(RDB_VERSION, '0.5.1', 'plugin version contract');
+check(RDB_VERSION, '0.5.2', 'plugin version contract');
 
 foreach ($GLOBALS['rdb_test_actions']['init'] as $callback) { $callback(); }
 $registered = $GLOBALS['rdb_registered_types']['rdb_demande'];
