@@ -38,3 +38,7 @@ Plugin 0.4.0, dernier commit applicatif valide : 1c9adb52f88a8318e9f61a944c3ea39
 - Capacités du type privé `rdb_demande` mappées explicitement à `manage_options`; création par l'interface WordPress désactivée et REST toujours non exposé. Cette modification renforce l'isolation des dossiers face aux autres extensions pouvant effectuer des requêtes sur les types de publications.
 - Recherche interne des demandes par coordonnées, ville ou code postal; combinaison avec filtre de statut et pagination, sans requête publique. Tests de configuration des capacités et de construction des filtres inclus.
 - Déploiement et activation réels toujours non vérifiés : aucun secret d'accès ni source WordPress historique n'est apparu dans le dépôt.
+
+## Vérification WordPress réelle en CI (en cours)
+
+Un deuxième job du workflow `Validate and package WordPress extension` installe WordPress et MySQL **temporaires**, active le plugin et exerce les capacités WordPress, les filtres WP_Query, l'export/effacement et le shortcode. Son succès est une condition du résultat de la CI, donc de l'autodéploiement dépendant de cette CI. Vérifier le premier run après publication; ne pas confondre cet environnement jetable avec la production ou avec le WordPress historique et ses extensions.

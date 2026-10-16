@@ -4,19 +4,26 @@
 **Dépôt :** takatakca/RAMASSEDEBRIS.CA
 **Branche :** main
 **Dernier commit vérifié au début de la session :** 4c8e75187866aa87b948c2f24fc7cf7673f310f2
-**Dernier commit de cette session :** publication du plugin 0.5.0 en cours; relever le SHA réel à la reprise.
-**CI dernière vérifiée avant modification :** run 38792476872 — SUCCESS.
+**Dernier commit applicatif publié dans cette session :** 1a41b8589a96063724cff9e1d131b6735ea845f5 (CI 38848126133 : SUCCESS). **Lot actuel :** ajout d'un job de validation WordPress/MySQL réel mais jetable; relever le SHA et la CI après sa publication.
+**CI dernière vérifiée avant modification :** run 38848126133 — SUCCESS (0.5.0).
 **Déploiement précédent :** run 38792527572 — SKIPPED.
 **Version cible du plugin :** 0.5.0.
+
+## Nouveau travail CI en cours
+- Une installation WordPress/MySQL jetable dans GitHub Actions valide le CPT réel, les capacités des rôles, les recherches sur les métadonnées, le workflow natif d'export/effacement et le shortcode.
+- La CI devra être entièrement verte avant tout déploiement automatique. Aucune donnée ni serveur de production n'est utilisé.
+- Le déploiement et la préproduction du site historique restent bloqués par les accès et sources documentés aux issues #1 à #3.
 
 ## Dernière tâche terminée
 Audit GitHub de la branche, arborescence, documents, issues #1 à #3 et exécutions CI. Renforcement des capacités natives du type privé `rdb_demande` : permissions de lecture/écriture/suppression mappées à `manage_options`, création standard interdite. Recherche interne dans les demandes par nom, téléphone, courriel, ville et code postal, combinable aux statuts et à la pagination. Tests PHP des permissions et de construction des clauses WP_Query ajoutés.
 
 ## Tâche actuellement en cours
-Confirmer le commit/push 0.5.0 et son résultat de CI, corriger immédiatement toute erreur. Puis reprendre issue #1 avec les sources originales du site WordPress et d'Operations Center; les recherches dans les dépôts accessibles et Google Drive des sessions précédentes n'ont pas fourni le code.
+Confirmer le commit/push du job WordPress/MySQL et les résultats de sa CI; corriger toute erreur, puis reprendre les issues #1 à #3 si leurs accès deviennent disponibles. Puis reprendre issue #1 avec les sources originales du site WordPress et d'Operations Center; les recherches dans les dépôts accessibles et Google Drive des sessions précédentes n'ont pas fourni le code.
 
 ## Fichiers modifiés
 - plugin/ramassedebris-service/ramassedebris-service.php
+- tests/wordpress-integration.php
+- .github/workflows/validate.yml
 - tests/smoke.php
 - README.md
 - docs/PROJECT_STATUS.md
@@ -27,6 +34,8 @@ Confirmer le commit/push 0.5.0 et son résultat de CI, corriger immédiatement t
 
 ## Commandes et vérifications
 - GitHub : get_repo, branches/main, tree/main, issues ouvertes, PR, derniers workflow runs, AGENTS.md et documents permanents, lecture du PHP et tests.
+- CI 38848024103 : rouge sur indices d'assertions WP_Query simulées, corrigées sans modifier les données de production.
+- CI 38848126133 : verte après correction.
 - Exécuter la CI GitHub pour `php -l`, `php tests/smoke.php`, tests des gestionnaires POST, `node --check`, tests navigateur, `bash -n`, ZIP.
 - À vérifier : run de la version 0.5.0 après le push.
 - Tests réels du site WordPress, droits éditeur/auteur, SMTP, CDN, WooCommerce/YITH : non effectués.

@@ -41,3 +41,6 @@ Pour éviter qu'un rôle éditeur possédant `read_private_posts` n'accède aux 
 
 ## D-013 — Recherche interne seulement (2026-10-15)
 La recherche de coordonnées des demandes est limitée à l'interface d'administration déjà protégée par `manage_options` et utilise des clauses `WP_Query` sur métadonnées. Aucun endpoint public ni index de recherche du site n'est exposé.
+
+## D-014 — Préproduction technique CI jetable (2026-10-15)
+Le workflow de validation installe un WordPress et un MySQL éphémères, sans comptes clients ni secrets de production, pour exercer les permissions réelles de WordPress et ses traitements de demandes. Ce job fait partie de la validation en amont de toute publication automatique. Il ne remplace pas une sauvegarde restaurable ni une préproduction fidèle du vrai site avec ses extensions historiques.

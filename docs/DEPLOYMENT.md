@@ -80,3 +80,7 @@ Le script `bash tests/run-request-handler.sh` vérifie la soumission du formulai
 ## Contrôle de séparation des rôles (0.5.0)
 
 En préproduction, après installation ou mise à jour du plugin, vérifier avec un utilisateur administrateur que le tableau privé s'affiche et que la recherche par coordonnées fonctionne. Vérifier avec un éditeur et un auteur que l'accès à `rdb_demande` est refusé via les capacités WordPress, les interfaces d'administration et les plugins tiers; ne pas se limiter à masquer le menu. Les données WooCommerce/YITH et l'authentification TAKATAK ne sont pas modifiées.
+
+## Validation native WordPress en CI
+
+Le job `wordpress-integration` de GitHub Actions crée un WordPress et une base MySQL temporaires. Il y active la version courante du plugin et effectue les tests de droits, recherche, export/effacement et shortcode sans toucher au serveur historique. Le workflow de transfert en production ne doit fonctionner automatiquement qu'après réussite de **tous** les jobs de validation, mais demeure inactif tant que l'environnement production n'est pas qualifié. Sur une préproduction réelle, comparer WordPress, PHP, cache, SMTP et plugins WooCommerce/YITH avec le site existant.

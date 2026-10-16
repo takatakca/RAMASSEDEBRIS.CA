@@ -35,3 +35,6 @@ Contrôles du plugin 0.4.0 réussis sur 1c9adb52f88a8318e9f61a944c3ea3942e6a7337
 - [x] Ajouter recherche privée et filtres croisés dans la console administrateur, avec tests de construction des requêtes.
 - [ ] Vérifier CI du commit 0.5.0 et corriger toute erreur.
 - [ ] Effectuer validation des capacités dans une véritable préproduction WordPress, notamment éditeur/auteur/administrateur, avec et sans extensions tierces.
+
+- [ ] Vérifier le job `wordpress-integration` sur WordPress/MySQL jetables (première exécution CI après publication), corriger jusqu'au vert.
+- [ ] Tester séparément en préproduction réelle les extensions WooCommerce/YITH, Wordfence, le site et les sauvegardes; le WordPress jetable n'en apporte aucune preuve.

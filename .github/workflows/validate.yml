@@ -42,3 +42,49 @@ jobs:
           name: ramassedebris-wordpress-plugin
           path: dist/ramassedebris-service.zip
           retention-days: 14
+
+  wordpress-integration:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_DATABASE: rdb_ci
+          MYSQL_USER: rdb_ci
+          MYSQL_PASSWORD: ci-only-password
+          MYSQL_ROOT_PASSWORD: ci-root-password
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -pci-root-password --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mysqli
+          coverage: none
+      - name: Install disposable WordPress and activate isolated plugin
+        env:
+          WP_ROOT: ${{ runner.temp }}/rdb-wordpress
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsSL --retry 3 -o "$RUNNER_TEMP/wp-cli.phar" https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+          php "$RUNNER_TEMP/wp-cli.phar" --info
+          mkdir -p "$WP_ROOT"
+          php "$RUNNER_TEMP/wp-cli.phar" core download --path="$WP_ROOT" --quiet
+          php "$RUNNER_TEMP/wp-cli.phar" config create --path="$WP_ROOT" --dbname=rdb_ci --dbuser=rdb_ci --dbpass=ci-only-password --dbhost=127.0.0.1 --skip-check
+          php "$RUNNER_TEMP/wp-cli.phar" core install --path="$WP_ROOT" --url=http://localhost --title="Ramasse CI" --admin_user=rdb_ci_admin --admin_password="Local-Only-CI-Pass-2048" --admin_email=admin@example.invalid --skip-email
+          cp -R plugin/ramassedebris-service "$WP_ROOT/wp-content/plugins/"
+          php "$RUNNER_TEMP/wp-cli.phar" plugin activate ramassedebris-service --path="$WP_ROOT"
+      - name: Exercise roles, WordPress queries, privacy hooks and shortcode
+        env:
+          WP_ROOT: ${{ runner.temp }}/rdb-wordpress
+        shell: bash
+        run: |
+          set -euo pipefail
+          php "$RUNNER_TEMP/wp-cli.phar" eval-file "$GITHUB_WORKSPACE/tests/wordpress-integration.php" --path="$WP_ROOT"

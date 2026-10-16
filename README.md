@@ -60,3 +60,7 @@ Le script n'effectue aucune modification et ne collecte aucun secret. Le déploi
 ## Suivi des demandes en administration (0.5.0)
 
 Seuls les administrateurs autorisés à `manage_options` peuvent consulter et traiter les demandes privées. La version 0.5.0 interdit en outre aux rôles habituels WordPress (éditeur, auteur) l'accès aux capacités natives de ce type de contenu; les capacités sont mappées explicitement à `manage_options`, et la création par l'éditeur WordPress est désactivée. Le tableau Ramasse Débris inclut une recherche interne (nom, téléphone, courriel, ville et code postal) combinable aux statuts et à la pagination. La recherche ne figure ni dans les routes publiques ni dans l'API REST.
+
+## Intégration WordPress automatisée
+
+Le workflow de validation comprend aussi une instance **jetable** de WordPress/MySQL isolée du site de production. Le test `tests/wordpress-integration.php` vérifie le chargement réel du plugin, les capacités admin/éditeur/auteur, les recherches WP_Query, les hooks d'accès/effacement de données et le shortcode. Aucun accès ni copie des données de ramassedebris.ca n'est utilisé. La réussite de ce test ne remplace pas l'essai sur la préproduction historique avec WooCommerce/YITH.
