@@ -69,3 +69,10 @@ Un deuxième job du workflow `Validate and package WordPress extension` installe
 - Tests HTTP réels sur le WordPress/MySQL éphémère : le premier commit `56b852997537efc6bceef93896fc979fe7223ff3` avait une erreur de syntaxe des arguments curl facultatifs (`38950313111` FAILED), corrigée dans `84b8fa887db6108701dac40de0028d504543b703`. Run `38950507500` **SUCCESS** (PHP/JS/ZIP et WP/HTTP). Déploiement `38950644731` **SKIPPED**.
 - Nouvelle version 0.5.2 : l'absence d'adresse courriel administrateur valide est enregistrée comme échec d'avis (`_rdb_notification_sent=0`) au lieu de rester invisible. Cas de test ajouté. **Nouvelle CI à vérifier après push.**
 - Sources historiques, sauvegarde restaurable, préproduction réelle et SSH restent indisponibles/non vérifiés : aucune preuve de mise en ligne.
+
+## Validation finale de la reprise — 2026-10-16
+
+- Plugin 0.5.2 sur `main`, commit `6af7b905e2fcadcae64c704d4f62314b117523dc` : **CI 38951028567 réussie** sur les deux jobs (validations PHP, JS, ZIP, environnement WordPress/MySQL jetable, HTTP AJAX et POST).
+- Déploiement associé 38951127750 : **skipped**, production non modifiée.
+- L'outil de navigation web n'a pas réussi à ouvrir https://ramassedebris.ca; la disponibilité et l'activation du plugin sur l'installation historique ne sont pas vérifiées.
+- Sources historiques WordPress/Operations Center, préproduction/restauration et cible SSH restent les trois blocages documentés (#1, #2, #3).

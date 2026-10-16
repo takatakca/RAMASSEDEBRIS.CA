@@ -56,5 +56,9 @@ Contrôles du plugin 0.4.0 réussis sur 1c9adb52f88a8318e9f61a944c3ea3942e6a7337
 
 - [x] Contrôles HTTP réellement exécutés contre un WordPress jetable (AJAX, CSRF, dépassements, honeypot, demande privée) : CI `38950507500` réussie.
 - [x] Corriger le signalement d'alerte non envoyée quand l'adresse administrateur WordPress est invalide (plugin 0.5.2, tests du gestionnaire).
-- [ ] Contrôler la CI du commit 0.5.2, l'artefact et le run de déploiement.
+- [x] Contrôler la CI du commit 0.5.2 et le run de déploiement : CI 38951028567 SUCCESS, ZIP généré; déploiement 38951127750 SKIPPED.
 - [ ] Réaliser les tests SMTP et la vérification WordPress historique dès que la préproduction et ses sauvegardes sont disponibles.
+
+## Première action après cette relève
+
+Récupérer les vrais fichiers WordPress/Operations Center du site (issue #1) dès qu'un accès autorisé les rend disponibles; ne pas déployer sur un site dont sauvegarde, installation et chemin ne sont pas confirmés. L'ensemble des tests logiciels automatisés du plugin actuel est réussi, mais le site historique et SMTP ne sont pas qualifiés.

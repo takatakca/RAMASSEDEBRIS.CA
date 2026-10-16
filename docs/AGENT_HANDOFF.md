@@ -7,7 +7,7 @@
 **Dernière CI du lot HTTP :** 38950507500 — SUCCESS, deux jobs incluant WordPress/MySQL et POST HTTP réels.
 **Dernier run SSH :** 38950644731 — SKIPPED, production non modifiée.
 **Version préparée et publiée dans le lot actuel :** 0.5.2
-**Dernier SHA du lot 0.5.2 :** lire la branche main après le push de cette relève; ne pas déduire son SHA du précédent commit.
+**Dernier SHA applicatif vérifié :** 6af7b905e2fcadcae64c704d4f62314b117523dc; CI 38951028567 SUCCESS (deux jobs). Le commit documentaire final est supplémentaire : lire le HEAD de main pour son SHA.
 
 ## Dernière tâche achevée
 
@@ -19,7 +19,7 @@
 
 ## Tâche actuellement en cours
 
-Vérifier les résultats CI du commit 0.5.2, y compris ZIP, WordPress/MySQL, HTTP réel et run workflow_run SSH ignoré. Si échec : corriger. Sinon poursuivre l'issue #1, récupération des véritables sources WordPress/WooCommerce et Operations Center, puis la qualification de préproduction issue #2 et les accès SSH issue #3.
+Le plugin 0.5.2 et ses tests ont été validés; le prochain chantier principal est **issue #1 : récupérer les véritables sources WordPress/WooCommerce et Operations Center**, puis qualifier la préproduction issue #2 et les accès SSH issue #3. Ces opérations sont impossibles sans accès aux sources et au site réel.
 
 ## Fichiers modifiés dans cette session
 
@@ -40,7 +40,9 @@ Vérifier les résultats CI du commit 0.5.2, y compris ZIP, WordPress/MySQL, HTT
 - CI sur ccf9a38 (38950002117) : PHP, JS, contrat gestionnaire, WordPress/MySQL, archive ZIP — SUCCESS.
 - CI sur 56b8529 (38950313111) : test HTTP rouge à cause d'un argument curl sans --data-urlencode. Correction publiée.
 - CI sur 84b8fa8 (38950507500) : mêmes validations et HTTP WordPress — SUCCESS. Run SSH suivant 38950644731 SKIPPED.
-- Tests du scénario d'adresse administrateur invalide ajoutés à la version 0.5.2; vérifier le résultat du nouveau run après publication.
+- Tests du scénario d'adresse administrateur invalide inclus en 0.5.2, commit `6af7b905e2fcadcae64c704d4f62314b117523dc`, run 38951028567 **SUCCESS** (PHP/JS, ZIP, WordPress/MySQL et tests HTTP).
+- Le workflow de déploiement déclenché ensuite : run `38951127750`, **SKIPPED** conformément aux garde-fous.
+- La vérification web du site `https://ramassedebris.ca` a renvoyé une indisponibilité dans l'outil de consultation : aucune preuve d'activation en production.
 
 ## Problèmes, erreurs et statut de déploiement
 
