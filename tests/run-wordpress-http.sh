@@ -86,13 +86,13 @@ submit_case invalid "$(printf 'X%.0s' {1..101})" "Un divan et deux commodes." "$
 assert_count 0
 submit_case invalid "Client de test" "$(printf 'X%.0s' {1..1501})" "$nonce" ""
 assert_count 0
-submit_case invalid "Client de test" "Un divan et deux commodes." "$nonce" "" 'rdb_email[]=bad'
+submit_case invalid "Client de test" "Un divan et deux commodes." "$nonce" "" --data-urlencode 'rdb_email[]=bad'
 assert_count 0
 submit_case expired "Client de test" "Un divan et deux commodes." invalid ""
 assert_count 0
 submit_case sent "Robot de test" "Un divan et deux commodes." "$nonce" "spam.example.invalid"
 assert_count 0
-submit_case sent "Client de test" "Un divan et deux commodes." "$nonce" "" 'rdb_email=client@example.invalid'
+submit_case sent "Client de test" "Un divan et deux commodes." "$nonce" "" --data-urlencode 'rdb_email=client@example.invalid'
 assert_count 1
 
 echo "PASS: real HTTP nonce, CSRF rejection, oversized fields, malformed optional data and private POST persistence"
