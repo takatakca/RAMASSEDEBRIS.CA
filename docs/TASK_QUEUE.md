@@ -42,5 +42,5 @@ Contrôles du plugin 0.4.0 réussis sur 1c9adb52f88a8318e9f61a944c3ea3942e6a7337
 ## Contrôles complémentaires
 
 - [x] Tests d'intégration WordPress/MySQL réellement exécutés en CI : run 38848368743 réussi.
-- [ ] Valider le nouveau script de vérification de version/activation WP-CLI sur le runner CI (la production demeure inaccessible).
+- [x] Valider le script WP-CLI sur le runner WordPress CI, version 0.5.0 active : run 38848878976 SUCCESS; production toujours inaccessible.
 - [ ] Répéter la vérification sur la préproduction historique avec les vraies extensions et les sauvegardes.

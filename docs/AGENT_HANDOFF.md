@@ -4,10 +4,10 @@
 **Dépôt :** takatakca/RAMASSEDEBRIS.CA
 **Branche :** main
 **Dernier commit avec CI WordPress complète réussie avant vérification WP-CLI :** 6098f349a7df968f03c4a5cbeaf0ba18952a4328
-**Dernière CI entièrement vérifiée :** 38848368743 — SUCCESS, deux jobs, WordPress/MySQL réel éphémère inclus.
+**Dernière CI entièrement vérifiée :** 38848878976 — SUCCESS, deux jobs; WordPress/MySQL jetables, vérification de version et d'activation par WP-CLI inclus.
 **Dernier déploiement :** run 38848457260 — SKIPPED; aucun transfert.
 **Version du plugin :** 0.5.0
-**Dernier commit de script/relève :** 8b4378f88a6ad606b15f28c4a4d127a50e601fa1. CI 38848720866 rouge uniquement à cause du PATH de WP-CLI sur le runner. Correctif à publier dans le prochain commit; vérifier sa CI.
+**Dernier commit de code validé :** d9de6b71e701e99589ce30eee17232805ae678de (CI 38848878976 : SUCCESS). La mise à jour documentaire de relève est un commit supplémentaire; relever son SHA courant sur main.
 
 ## Dernière tâche terminée
 
@@ -34,7 +34,7 @@ Confirmer la CI du prochain commit intégrant scripts/wp-check-plugin-readonly.s
 - CI 38848126133 : SUCCESS sur commit 1a41b8589a96063724cff9e1d131b6735ea845f5.
 - CI 38848368743 : SUCCESS sur commit 6098f349a7df968f03c4a5cbeaf0ba18952a4328; jobs validate et wordpress-integration, WordPress/MySQL éphémères, ZIP du plugin présent.
 - Déploiement 38848457260 : SKIPPED; le workflow est correctement bloqué lorsque RDB_AUTO_DEPLOY n'est pas activé.
-- À exécuter/vérifier en CI après dernier commit : bash -n scripts/wp-check-plugin-readonly.sh et bash scripts/wp-check-plugin-readonly.sh "$WP_ROOT" 0.5.0 dans l'environnement WordPress jetable.
+- CI 38848878976 confirmée : bash -n scripts/wp-check-plugin-readonly.sh et bash scripts/wp-check-plugin-readonly.sh sur WordPress jetable 0.5.0 ACTIVE, SUCCESS.
 - Aucune vérification sur le vrai WordPress, SMTP, CDN ou ses extensions tierces n'est effectuée.
 
 ## Problèmes et déploiement réel
@@ -60,4 +60,4 @@ Confirmer la CI du prochain commit intégrant scripts/wp-check-plugin-readonly.s
 
 - L'installation WordPress éphémère et l'intégration ont réussi sur 8b4378f, mais le script en lecture seule ne trouvait pas la commande wp. Le PHAR existe sous RUNNER_TEMP et non dans le PATH, d'où le run 38848720866 en échec.
 - Correctif : création d'un wrapper wp dans RUNNER_TEMP/bin et ajout au GITHUB_PATH avant l'étape de vérification. Aucun accès production et aucune donnée utilisateur.
-- La première action du prochain agent est de confirmer que le correctif du job 2026-10-15 passe sur main, puis de reprendre la vraie source WordPress issue #1.
+- Le correctif du runner WP-CLI est validé : run 38848878976 SUCCESS. Le prochain agent doit reprendre la source WordPress historique issue #1.

@@ -49,3 +49,9 @@ Un deuxième job du workflow `Validate and package WordPress extension` installe
 - Intégration WordPress/MySQL jetable : commit 6098f349a7df968f03c4a5cbeaf0ba18952a4328, run 38848368743; **deux jobs réussis**, ZIP créé.
 - Déploiement associé 38848457260 : **skipped**, aucune modification de production.
 - Script WP-CLI de vérification de version et d'activation : inclus dans la livraison suivante, CI à confirmer.
+
+## État vérifié final du contrôle WP-CLI
+
+- Le commit `d9de6b71e701e99589ce30eee17232805ae678de` a passé la CI GitHub `38848878976` : `validate` SUCCESS et `wordpress-integration` SUCCESS. Le plugin 0.5.0 a été activé et sa version contrôlée sur un WordPress jetable.
+- Le premier essai `38848720866` avait échoué : WP-CLI non exposé au PATH du runner; erreur corrigée et traçable dans GitHub.
+- La cible WordPress historique et son activation réelle demeurent **non vérifiées**; aucune publication de production n'est déduite de cette réussite CI.
