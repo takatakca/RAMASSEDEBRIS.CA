@@ -32,3 +32,9 @@ Repository : takatakca/RAMASSEDEBRIS.CA; branche : main. Avant les changements d
 ## Contrôle final de la reprise (2026-10-15)
 
 Plugin 0.4.0, dernier commit applicatif valide : 1c9adb52f88a8318e9f61a944c3ea3942e6a7337. CI 38792023520 : SUCCESS, y compris les tests du gestionnaire de soumission après correction des doubles WordPress manquants (HOUR_IN_SECONDS et admin_url). Déploiement workflow_run 38792081070 : SKIPPED, production inchangée. Deux exécutions intermédiaires rouges (38791669042 et 38791853207) sont documentées et ont été corrigées. Aucun test de l'installation WordPress réelle ou publication sur le domaine n'est prouvé.
+
+## Livraison 0.5.0 (présente session, CI à confirmer)
+
+- Capacités du type privé `rdb_demande` mappées explicitement à `manage_options`; création par l'interface WordPress désactivée et REST toujours non exposé. Cette modification renforce l'isolation des dossiers face aux autres extensions pouvant effectuer des requêtes sur les types de publications.
+- Recherche interne des demandes par coordonnées, ville ou code postal; combinaison avec filtre de statut et pagination, sans requête publique. Tests de configuration des capacités et de construction des filtres inclus.
+- Déploiement et activation réels toujours non vérifiés : aucun secret d'accès ni source WordPress historique n'est apparu dans le dépôt.

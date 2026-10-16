@@ -1,57 +1,49 @@
 # AGENT HANDOFF — RAMASSEDEBRIS.CA
 
-Date de relève : 2026-10-15
-Dépôt : takatakca/RAMASSEDEBRIS.CA
-Branche : main
-Dernier commit applicatif vérifié : 1c9adb52f88a8318e9f61a944c3ea3942e6a7337
-Dernier run CI vérifié : 38792023520 — SUCCESS
-Dernier run de déploiement : 38792081070 — SKIPPED (autodéploiement désactivé)
-Version du plugin : 0.4.0
-Dernier commit documentaire : consulter le HEAD de main après cette relève.
+**Date de relève :** 2026-10-15
+**Dépôt :** takatakca/RAMASSEDEBRIS.CA
+**Branche :** main
+**Dernier commit vérifié au début de la session :** 4c8e75187866aa87b948c2f24fc7cf7673f310f2
+**Dernier commit de cette session :** publication du plugin 0.5.0 en cours; relever le SHA réel à la reprise.
+**CI dernière vérifiée avant modification :** run 38792476872 — SUCCESS.
+**Déploiement précédent :** run 38792527572 — SKIPPED.
+**Version cible du plugin :** 0.5.0.
 
 ## Dernière tâche terminée
+Audit GitHub de la branche, arborescence, documents, issues #1 à #3 et exécutions CI. Renforcement des capacités natives du type privé `rdb_demande` : permissions de lecture/écriture/suppression mappées à `manage_options`, création standard interdite. Recherche interne dans les demandes par nom, téléphone, courriel, ville et code postal, combinable aux statuts et à la pagination. Tests PHP des permissions et de construction des clauses WP_Query ajoutés.
 
-- Audit du repository, de la branche, des documents, des issues #1 à #3, des PR (aucune) et des dernières Actions.
-- Formulaire 0.4.0 : nonce WordPress renouvelé par AJAX POST avant soumission pour les pages en cache, message d'erreur explicite, soumission classique préservée sans JavaScript.
-- Déploiement SSH : déclenchement uniquement après une CI réussie sur main en mode auto, revalidation avant SSH, rejet d'un SHA devenu obsolète, empreintes PHP/CSS/JS contrôlées.
-- Tests JS du nonce frais, double soumission, pannes et soumission sans fetch.
-- Tests PHP du traitement public : méthode POST, nonce, honeypot, limite par IP, champs/consentement, sauvegarde privée, notification sans données personnelles, panne SMTP et panne de persistance.
-- Correction des doubles WordPress de tests (constante HOUR_IN_SECONDS et fonction admin_url); CI finale verte.
+## Tâche actuellement en cours
+Confirmer le commit/push 0.5.0 et son résultat de CI, corriger immédiatement toute erreur. Puis reprendre issue #1 avec les sources originales du site WordPress et d'Operations Center; les recherches dans les dépôts accessibles et Google Drive des sessions précédentes n'ont pas fourni le code.
 
-## Tâche en cours
-
-Issue #1 : récupérer les sources originales WordPress/WooCommerce et Operations Center. Aucune source historique n'a été retrouvée dans les autres repositories accessibles; ne pas la reconstruire sans inventaire.
-
-## Fichiers modifiés pendant la reprise
-
+## Fichiers modifiés
 - plugin/ramassedebris-service/ramassedebris-service.php
-- plugin/ramassedebris-service/assets/form.js
-- tests/smoke.php, tests/form.test.cjs, tests/request-case.php, tests/run-request-handler.sh
-- .github/workflows/validate.yml, .github/workflows/deploy-wordpress.yml
-- AGENTS.md, README.md
-- docs/AGENT_HANDOFF.md, docs/PROJECT_STATUS.md, docs/TASK_QUEUE.md, docs/DEPLOYMENT.md, docs/DECISIONS.md
+- tests/smoke.php
+- README.md
+- docs/PROJECT_STATUS.md
+- docs/TASK_QUEUE.md
+- docs/DECISIONS.md
+- docs/DEPLOYMENT.md
+- docs/AGENT_HANDOFF.md
 
-## Commandes et vérifications exécutées
+## Commandes et vérifications
+- GitHub : get_repo, branches/main, tree/main, issues ouvertes, PR, derniers workflow runs, AGENTS.md et documents permanents, lecture du PHP et tests.
+- Exécuter la CI GitHub pour `php -l`, `php tests/smoke.php`, tests des gestionnaires POST, `node --check`, tests navigateur, `bash -n`, ZIP.
+- À vérifier : run de la version 0.5.0 après le push.
+- Tests réels du site WordPress, droits éditeur/auteur, SMTP, CDN, WooCommerce/YITH : non effectués.
 
-- Inspection via GitHub : metadata, branches/main, tree récursif, commits, issues, PR, documents, workflow runs et logs.
-- CI 38791143965 : succès, plugin 0.4.0 avec tests navigateur.
-- CI 38791669042 : échec du harnais PHP, constante HOUR_IN_SECONDS non simulée.
-- CI 38791853207 : échec du harnais PHP, admin_url non simulée.
-- CI 38792023520 : succès, syntaxe PHP, tests métier, tests JS, tests de suppression et de soumission, scripts shell, empaquetage ZIP.
-- Déploiement 38792081070 : déclenché par workflow_run après succès mais skipped par configuration.
+## Problèmes et état réel du déploiement
+- **Production : NON déployée par cette session.** Déploiement SSH désactivé tant que les secrets et chemins ne sont pas vérifiés.
+- **Issue #1 :** code WordPress/Operations Center original absent du repository.
+- **Issue #2 :** préproduction/sauvegarde restaurable et tests du site réel manquants.
+- **Issue #3 :** accès SSH, chemin absolu du plugin, empreinte SSH et secrets RDB_DEPLOY_* non confirmés.
+- Ne pas inventer l'intégration TAKATAK, de réservations ou de commandes WooCommerce.
 
-## Blocages et état du déploiement
-
-Production NON DEPLOYÉE et NON ACTIVÉE par cette session. Cible SSH, chemin WordPress, autorisation d'installation, sauvegardes et tests de préproduction non vérifiés. L'outil de consultation externe n'a pas pu accéder au domaine pour une validation publique.
-
-Les accès nécessaires sont : export du site historique, sauvegarde restaurable, accès WordPress administrateur, préproduction, SMTP, host/user/path SSH et secrets GitHub Actions RDB_DEPLOY_* en environnement approuvé. Ne jamais enregistrer les secrets ni les données personnelles dans GitHub.
-
-TAKATAK reste l'autorité d'identité de l'écosystème; ne pas créer un deuxième référentiel client interentreprises, ni simuler les réservations WooCommerce/YITH.
+## Accès nécessaires (sans secrets dans Git)
+Export des sources historiques, sauvegarde restaurable, accès administrateur et à la préproduction WordPress, test SMTP, host/utilisateur/chemin/empreinte SSH autorisés et secrets GitHub Actions de l'environnement production.
 
 ## Prochaine action exacte
-
-1. Relire AGENTS.md et ce fichier, vérifier le dernier SHA sur main et les runs récents.
-2. Reprendre issue #1 avec les vraies sources WordPress et Operations Center, sans repartir de zéro.
-3. Quand les accès deviennent disponibles : inventaire en lecture seule avec scripts/wp-audit-readonly.sh, sauvegarde et restauration en préproduction, tests sur page en cache, soumission, SMTP, droits admin et confidentialité.
-4. Qualifier les secrets, l'empreinte SSH et le chemin réel; activer le déploiement autorisé; vérifier la version WordPress active et le site réel.
-5. Réactualiser ce rapport avec le prochain SHA, les preuves, blocages et action suivante.
+1. Lire AGENTS.md et le présent document, récupérer le HEAD de main et la CI associée.
+2. Si le nouveau commit 0.5.0 est rouge, lire les logs, corriger, pousser puis revalider.
+3. Reprendre issue #1 et ne pas reconstruire l'ancien site sans sources originales.
+4. Dès que préproduction et accès existent, exécuter `bash scripts/wp-audit-readonly.sh /chemin/du/site`, valider les rôles, le formulaire et les données, sauvegarder et préparer le déploiement isolé.
+5. Ne déclarer le déploiement réussi qu'avec la version vérifiée sur serveur, plugin activé et tests fonctionnels réussis.

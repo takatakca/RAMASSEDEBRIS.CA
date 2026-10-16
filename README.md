@@ -26,7 +26,7 @@ Le répertoire plugin/ramassedebris-service contient une extension WordPress aut
 
 Les sources historiques du site ne sont pas incluses dans ce dépôt. Lire AGENTS.md, docs/PROJECT_STATUS.md, docs/TASK_QUEUE.md, docs/AGENT_HANDOFF.md et docs/DECISIONS.md avant de modifier ou déployer quoi que ce soit.
 
-Version actuelle du plugin : **0.4.0**.
+Version actuelle du plugin : **0.5.0**.
 
 ## Développement / vérification
 
@@ -56,3 +56,7 @@ Lorsque l'accès à l'installation WordPress existante est disponible, lancer en
     bash scripts/wp-audit-readonly.sh /chemin/absolu/du/site
 
 Le script n'effectue aucune modification et ne collecte aucun secret. Le déploiement automatisé, une fois activé sur la bonne cible, compare également l'empreinte SHA-256 du fichier de plugin transféré. Cela ne remplace pas l'activation et les tests du site.
+
+## Suivi des demandes en administration (0.5.0)
+
+Seuls les administrateurs autorisés à `manage_options` peuvent consulter et traiter les demandes privées. La version 0.5.0 interdit en outre aux rôles habituels WordPress (éditeur, auteur) l'accès aux capacités natives de ce type de contenu; les capacités sont mappées explicitement à `manage_options`, et la création par l'éditeur WordPress est désactivée. Le tableau Ramasse Débris inclut une recherche interne (nom, téléphone, courriel, ville et code postal) combinable aux statuts et à la pagination. La recherche ne figure ni dans les routes publiques ni dans l'API REST.

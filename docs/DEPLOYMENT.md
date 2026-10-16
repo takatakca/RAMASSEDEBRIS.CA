@@ -44,7 +44,7 @@ Le plugin est raccordé aux outils natifs WordPress de confidentialité par adre
 
 ## Contrôles avant activation
 
-- Vérifier la version 0.4.0 dans la liste des extensions WordPress et la compatibilité des extensions existantes.
+- Vérifier la version 0.5.0 dans la liste des extensions WordPress et la compatibilité des extensions existantes.
 - Envoyer une demande test : l'enregistrement doit être privé, visible uniquement aux administrateurs et le courriel d'alerte ne doit pas divulguer la description ou les coordonnées.
 - Tester l'export et l'effacement des dossiers par courriel et le signalement des erreurs de suppression; prévoir un processus manuel pour les demandes sans courriel.
 - Vérifier les protections du site (cache/CDN, nonce, honeypot, HTTP 303, SMTP, permissions) et la politique de rétention selon les obligations applicables.
@@ -67,7 +67,7 @@ En cas de déploiement SSH autorisé, le workflow compare maintenant l'empreinte
 
 L'administrateur WordPress qui a personnellement vérifié la légitimité d'une demande d'effacement peut ouvrir Ramasse Débris > Demandes, afficher « Supprimer cette demande », cocher la confirmation et envoyer le formulaire de suppression. Le serveur exige le rôle administrateur, un nonce, POST, le bon type de dossier et la confirmation. La suppression est définitive et ne concerne que l'entrée WordPress du plugin. Sauvegardes, copies d'alerte des versions antérieures et autres intégrations éventuelles doivent faire l'objet de procédures séparées.
 
-L'extension correspond à la version 0.4.0; la présence du fichier sur le serveur n'est pas une preuve de son activation. Tester les lots d'effacement volumineux et les suppressions partiellement en erreur en préproduction.
+L'extension correspond à la version 0.5.0; la présence du fichier sur le serveur n'est pas une preuve de son activation. Tester les lots d'effacement volumineux et les suppressions partiellement en erreur en préproduction.
 
 ## Pages en cache et nonce invité
 
@@ -76,3 +76,7 @@ En version 0.4.0, le shortcode fournit une URL WordPress `admin-ajax.php`. Avec 
 ## Tests de sécurité du gestionnaire public
 
 Le script `bash tests/run-request-handler.sh` vérifie la soumission du formulaire avec des interfaces WordPress simulées : méthode POST, nonce, honeypot, limite des demandes, champs invalides ou tableau inattendu, consentement, sauvegarde privée, contenu sans coordonnées dans la notification et échec SMTP. Ces tests ne publient aucune information personnelle, n'envoient aucun courriel réel et ne remplacent pas une préproduction WordPress intégrée.
+
+## Contrôle de séparation des rôles (0.5.0)
+
+En préproduction, après installation ou mise à jour du plugin, vérifier avec un utilisateur administrateur que le tableau privé s'affiche et que la recherche par coordonnées fonctionne. Vérifier avec un éditeur et un auteur que l'accès à `rdb_demande` est refusé via les capacités WordPress, les interfaces d'administration et les plugins tiers; ne pas se limiter à masquer le menu. Les données WooCommerce/YITH et l'authentification TAKATAK ne sont pas modifiées.

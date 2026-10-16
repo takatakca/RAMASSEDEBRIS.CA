@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Ramasse Débris — Demandes de ramassage
  * Description: Formulaire de demande de ramassage et suivi privé dans WordPress. Aucun changement à WooCommerce.
- * Version: 0.4.0
+ * Version: 0.5.0
  * Requires at least: 6.0
  * Requires PHP: 7.4
  * Author: RAMASSE DÉBRIS MONTRÉAL
@@ -13,7 +13,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('RDB_VERSION', '0.4.0');
+define('RDB_VERSION', '0.5.0');
 define('RDB_PLUGIN_FILE', __FILE__);
 
 function rdb_services() {
@@ -211,6 +211,24 @@ function rdb_validate_request_data($values, $consent, $today) {
     return true;
 }
 
+/**
+ * Never inherit the core 'post' capabilities (notably read_private_posts).
+ * Private intake data must remain inaccessible to editors, authors and other
+ * roles even if another WordPress plugin exposes custom post type queries.
+ * No role migration needed: map each capability to manage_options.
+ */
+function rdb_private_post_capabilities() {
+    $actions = array(
+        'edit_post', 'read_post', 'delete_post', 'edit_posts',
+        'edit_others_posts', 'edit_private_posts', 'edit_published_posts',
+        'publish_posts', 'read_private_posts', 'delete_posts',
+        'delete_private_posts', 'delete_published_posts', 'delete_others_posts',
+    );
+    $caps = array_fill_keys($actions, 'manage_options');
+    $caps['create_posts'] = 'do_not_allow';
+    return $caps;
+}
+
 add_action('init', function () {
     register_post_type('rdb_demande', array(
         'label' => 'Demandes de ramassage',
@@ -218,6 +236,8 @@ add_action('init', function () {
         'show_ui' => false,
         'show_in_rest' => false,
         'exclude_from_search' => true,
+        'map_meta_cap' => false,
+        'capabilities' => rdb_private_post_capabilities(),
         'supports' => array('title'),
     ));
 });
@@ -470,6 +490,40 @@ add_action('admin_menu', function () {
     );
 });
 
+/**
+ * Admin-only list filters; WordPress WP_Query prepares all meta value LIKE
+ * clauses and retains pagination. Never expose this through a public endpoint.
+ */
+function rdb_admin_query_args($status, $search, $page) {
+    $args = array(
+        'post_type' => 'rdb_demande',
+        'post_status' => 'private',
+        'posts_per_page' => 20,
+        'paged' => max(1, (int) $page),
+        'orderby' => 'date',
+        'order' => 'DESC',
+    );
+    $filters = array('relation' => 'AND');
+    if (isset(rdb_statuses()[$status])) {
+        $filters[] = array('key' => '_rdb_status', 'value' => $status, 'compare' => '=');
+    }
+    if ($search !== '') {
+        $matching = array('relation' => 'OR');
+        foreach (array('name', 'phone', 'email', 'city', 'postal') as $field) {
+            $matching[] = array(
+                'key' => '_rdb_' . $field,
+                'value' => $search,
+                'compare' => 'LIKE',
+            );
+        }
+        $filters[] = $matching;
+    }
+    if (count($filters) > 1) {
+        $args['meta_query'] = $filters;
+    }
+    return $args;
+}
+
 function rdb_render_admin() {
     if (!current_user_can('manage_options')) {
         wp_die('Accès refusé.', '', array('response' => 403));
@@ -478,19 +532,10 @@ function rdb_render_admin() {
     if ($status && !isset(rdb_statuses()[$status])) {
         $status = '';
     }
+    $search = isset($_GET['rdb_search']) && is_string($_GET['rdb_search'])
+        ? rdb_truncate(trim(sanitize_text_field(wp_unslash($_GET['rdb_search']))), 100) : '';
     $page = isset($_GET['paged']) ? max(1, absint($_GET['paged'])) : 1;
-    $args = array(
-        'post_type' => 'rdb_demande',
-        'post_status' => 'private',
-        'posts_per_page' => 20,
-        'paged' => $page,
-        'orderby' => 'date',
-        'order' => 'DESC',
-    );
-    if ($status) {
-        $args['meta_query'] = array(array('key' => '_rdb_status', 'value' => $status));
-    }
-    $query = new WP_Query($args);
+    $query = new WP_Query(rdb_admin_query_args($status, $search, $page));
     ?>
     <div class="wrap">
       <h1>Demandes de ramassage</h1>
@@ -501,9 +546,17 @@ function rdb_render_admin() {
         <div class="notice notice-success is-dismissible"><p>Le statut a été mis à jour.</p></div>
       <?php endif; ?>
       <p>Les dates demandées ne confirment pas de réservation. Les changements ici ne modifient ni les commandes WooCommerce ni les données TAKATAK.</p>
-      <p><a href="<?php echo esc_url(admin_url('admin.php?page=rdb-demandes')); ?>">Toutes</a>
+      <form method="get" action="<?php echo esc_url(admin_url('admin.php')); ?>" role="search" style="margin:16px 0">
+        <input type="hidden" name="page" value="rdb-demandes">
+        <?php if ($status) : ?><input type="hidden" name="statut" value="<?php echo esc_attr($status); ?>"><?php endif; ?>
+        <label for="rdb-admin-search">Rechercher une demande (nom, téléphone, courriel, ville ou code postal)</label>
+        <input type="search" id="rdb-admin-search" name="rdb_search" value="<?php echo esc_attr($search); ?>" maxlength="100" style="min-width:260px">
+        <button class="button" type="submit">Rechercher</button>
+        <?php if ($search) : ?><a href="<?php echo esc_url(add_query_arg(array('page' => 'rdb-demandes', 'statut' => $status), admin_url('admin.php'))); ?>">Effacer la recherche</a><?php endif; ?>
+      </form>
+      <p><a href="<?php echo esc_url(add_query_arg(array('page' => 'rdb-demandes', 'rdb_search' => $search), admin_url('admin.php'))); ?>">Toutes</a>
         <?php foreach (rdb_statuses() as $code => $label) : ?>
-          | <a href="<?php echo esc_url(add_query_arg(array('page' => 'rdb-demandes', 'statut' => $code), admin_url('admin.php'))); ?>"><?php echo esc_html($label); ?></a>
+          | <a href="<?php echo esc_url(add_query_arg(array('page' => 'rdb-demandes', 'statut' => $code, 'rdb_search' => $search), admin_url('admin.php'))); ?>"><?php echo esc_html($label); ?></a>
         <?php endforeach; ?>
       </p>
       <table class="widefat striped">
@@ -585,7 +638,7 @@ function rdb_render_admin() {
       <?php
       if ($query->max_num_pages > 1) {
           echo wp_kses_post(paginate_links(array(
-              'base' => add_query_arg(array('page' => 'rdb-demandes', 'statut' => $status, 'paged' => '%#%'), admin_url('admin.php')),
+              'base' => add_query_arg(array('page' => 'rdb-demandes', 'statut' => $status, 'rdb_search' => $search, 'paged' => '%#%'), admin_url('admin.php')),
               'format' => '',
               'current' => $page,
               'total' => $query->max_num_pages,

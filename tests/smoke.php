@@ -4,7 +4,8 @@
  * Runs without network, WordPress installation or persistent test records.
  */
 define('ABSPATH', __DIR__ . '/');
-function add_action() {}
+function add_action($hook, $callback) { $GLOBALS['rdb_test_actions'][$hook][] = $callback; }
+function register_post_type($name, $settings) { $GLOBALS['rdb_registered_types'][$name] = $settings; }
 function add_filter() {}
 function add_shortcode() {}
 function register_activation_hook() {}
@@ -63,7 +64,19 @@ function check($actual, $expected, $description) {
     }
 }
 
-check(RDB_VERSION, '0.4.0', 'plugin version contract');
+check(RDB_VERSION, '0.5.0', 'plugin version contract');
+
+foreach ($GLOBALS['rdb_test_actions']['init'] as $callback) { $callback(); }
+$registered = $GLOBALS['rdb_registered_types']['rdb_demande'];
+check($registered['public'], false, 'request post type is not public');
+check($registered['show_in_rest'], false, 'request post type not exposed to REST');
+check($registered['show_ui'], false, 'default WordPress editor not exposed');
+check($registered['map_meta_cap'], false, 'no default post meta capability mapping');
+foreach (array('read_post', 'read_private_posts', 'edit_posts', 'edit_post', 'delete_post', 'delete_posts') as $cap) {
+    check($registered['capabilities'][$cap], 'manage_options', 'request cap: ' . $cap);
+}
+check($registered['capabilities']['create_posts'], 'do_not_allow', 'cannot create CPT from native UI');
+
 check(count(rdb_services()), 5, 'service catalogue');
 check(count(rdb_volumes()), 4, 'volume catalogue');
 check(count(rdb_statuses()), 4, 'status catalogue');
@@ -72,6 +85,25 @@ check(rdb_text_length('bonjour'), 7, 'text length');
 check(function_exists('rdb_export_personal_data'), true, 'WordPress privacy exporter');
 check(function_exists('rdb_erase_personal_data'), true, 'WordPress privacy eraser');
 check(function_exists('rdb_handle_manual_delete'), true, 'admin-only manual privacy deletion handler');
+$plain_query = rdb_admin_query_args('', '', 1);
+check($plain_query['post_type'], 'rdb_demande', 'admin query restricted to requests');
+check($plain_query['post_status'], 'private', 'admin query restricted to private records');
+check(isset($plain_query['meta_query']), false, 'no metadata filter when not requested');
+$status_query = rdb_admin_query_args('contacte', '', 2);
+check($status_query['paged'], 2, 'admin filter page');
+check($status_query['meta_query'][1]['key'], '_rdb_status', 'status filter metadata');
+check($status_query['meta_query'][1]['value'], 'contacte', 'status filter value');
+$search_query = rdb_admin_query_args('planifie', '514-555', 3);
+check($search_query['meta_query']['relation'], 'AND', 'status and contact search combined');
+check($search_query['meta_query'][2]['relation'], 'OR', 'search fields combined as OR');
+check(count($search_query['meta_query'][2]), 6, 'five searchable contact fields');
+check($search_query['meta_query'][2][1]['key'], '_rdb_name', 'name searchable');
+check($search_query['meta_query'][2][2]['key'], '_rdb_phone', 'phone searchable');
+check($search_query['meta_query'][2][3]['key'], '_rdb_email', 'email searchable');
+check($search_query['meta_query'][2][4]['key'], '_rdb_city', 'city searchable');
+check($search_query['meta_query'][2][5]['key'], '_rdb_postal', 'postal searchable');
+check(rdb_admin_query_args('invalid', '', 1)['meta_query'] ?? null, null, 'unknown statuses ignored');
+
 $_SERVER['REQUEST_METHOD'] = 'POST';
 rdb_refresh_nonce();
 check($GLOBALS['rdb_ajax_response']['success'], true, 'nonce refresh succeeds with POST');

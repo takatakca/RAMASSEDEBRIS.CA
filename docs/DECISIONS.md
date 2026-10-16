@@ -35,3 +35,9 @@ Une page publique mise en cache peut servir un nonce WordPress expiré. La versi
 
 ## D-011 — Tester les comportements critiques sans base client (2026-10-15)
 Le gestionnaire de formulaire public est vérifié dans des processus PHP isolés au moyen de doubles d'interfaces WordPress. Les scénarios évaluent validation, confidentialité et échecs d'infrastructure sans manipuler de demandes réelles. Ce complément à la CI ne suffit pas à certifier la compatibilité WordPress complète en production.
+
+## D-012 — Capacités WordPress privées dédiées (2026-10-15)
+Pour éviter qu'un rôle éditeur possédant `read_private_posts` n'accède aux dossiers de ramassage au moyen d'extensions tiers ou d'appels WordPress, le CPT mappe toutes ses capacités de lecture, modification et suppression à `manage_options` et interdit la création via l'interface de publications standard. Ce changement ne doit jamais étendre les droits des autres rôles. Les hooks de gestion du formulaire public, les outils de confidentialité et les tâches Cron conservent leurs actions directes autorisées.
+
+## D-013 — Recherche interne seulement (2026-10-15)
+La recherche de coordonnées des demandes est limitée à l'interface d'administration déjà protégée par `manage_options` et utilise des clauses `WP_Query` sur métadonnées. Aucun endpoint public ni index de recherche du site n'est exposé.
