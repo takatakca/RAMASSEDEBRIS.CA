@@ -3,11 +3,11 @@
 **Date de relève :** 2026-10-15
 **Dépôt :** takatakca/RAMASSEDEBRIS.CA
 **Branche :** main
-**Dernier commit applicatif vérifié :** 6098f349a7df968f03c4a5cbeaf0ba18952a4328
+**Dernier commit avec CI WordPress complète réussie avant vérification WP-CLI :** 6098f349a7df968f03c4a5cbeaf0ba18952a4328
 **Dernière CI entièrement vérifiée :** 38848368743 — SUCCESS, deux jobs, WordPress/MySQL réel éphémère inclus.
 **Dernier déploiement :** run 38848457260 — SKIPPED; aucun transfert.
 **Version du plugin :** 0.5.0
-**SHA du commit de relève et du nouveau script WP-CLI :** obtenir HEAD de main au début de la session suivante; confirmer la CI correspondante.
+**Dernier commit de script/relève :** 8b4378f88a6ad606b15f28c4a4d127a50e601fa1. CI 38848720866 rouge uniquement à cause du PATH de WP-CLI sur le runner. Correctif à publier dans le prochain commit; vérifier sa CI.
 
 ## Dernière tâche terminée
 
@@ -55,3 +55,9 @@ Confirmer la CI du prochain commit intégrant scripts/wp-check-plugin-readonly.s
 3. Reprendre issue #1 avec les sources WordPress historiques lorsqu'elles deviennent disponibles, sans repartir de zéro.
 4. Après qualification d'une préproduction : utiliser scripts/wp-audit-readonly.sh et scripts/wp-check-plugin-readonly.sh /chemin/absolu/wordpress 0.5.0; tester rôles, cache, SMTP, confidentialité et WooCommerce/YITH.
 5. Avec secrets et cible validés, déployer uniquement le plugin et vérifier version active + parcours métier. Inscrire les preuves et le SHA ici avant toute autre relève.
+
+## Résolution d'une erreur CI (script d'activation)
+
+- L'installation WordPress éphémère et l'intégration ont réussi sur 8b4378f, mais le script en lecture seule ne trouvait pas la commande wp. Le PHAR existe sous RUNNER_TEMP et non dans le PATH, d'où le run 38848720866 en échec.
+- Correctif : création d'un wrapper wp dans RUNNER_TEMP/bin et ajout au GITHUB_PATH avant l'étape de vérification. Aucun accès production et aucune donnée utilisateur.
+- La première action du prochain agent est de confirmer que le correctif du job 2026-10-15 passe sur main, puis de reprendre la vraie source WordPress issue #1.

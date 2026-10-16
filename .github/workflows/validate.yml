@@ -75,6 +75,10 @@ jobs:
           set -euo pipefail
           curl -fsSL --retry 3 -o "$RUNNER_TEMP/wp-cli.phar" https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
           php "$RUNNER_TEMP/wp-cli.phar" --info
+          mkdir -p "$RUNNER_TEMP/bin"
+          printf '#!/usr/bin/env bash\nexec php "%s/wp-cli.phar" "$@"\n' "$RUNNER_TEMP" > "$RUNNER_TEMP/bin/wp"
+          chmod +x "$RUNNER_TEMP/bin/wp"
+          echo "$RUNNER_TEMP/bin" >> "$GITHUB_PATH"
           mkdir -p "$WP_ROOT"
           php "$RUNNER_TEMP/wp-cli.phar" core download --path="$WP_ROOT" --quiet
           php "$RUNNER_TEMP/wp-cli.phar" config create --path="$WP_ROOT" --dbname=rdb_ci --dbuser=rdb_ci --dbpass=ci-only-password --dbhost=127.0.0.1 --skip-check
