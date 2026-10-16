@@ -42,3 +42,10 @@ Plugin 0.4.0, dernier commit applicatif valide : 1c9adb52f88a8318e9f61a944c3ea39
 ## Vérification WordPress réelle en CI (en cours)
 
 Un deuxième job du workflow `Validate and package WordPress extension` installe WordPress et MySQL **temporaires**, active le plugin et exerce les capacités WordPress, les filtres WP_Query, l'export/effacement et le shortcode. Son succès est une condition du résultat de la CI, donc de l'autodéploiement dépendant de cette CI. Vérifier le premier run après publication; ne pas confondre cet environnement jetable avec la production ou avec le WordPress historique et ses extensions.
+
+## Vérification de la présente session (2026-10-15)
+
+- Version 0.5.0 : permissions privées de WordPress et recherche interne. Commit 1a41b8589a96063724cff9e1d131b6735ea845f5; CI 38848126133 réussie.
+- Intégration WordPress/MySQL jetable : commit 6098f349a7df968f03c4a5cbeaf0ba18952a4328, run 38848368743; **deux jobs réussis**, ZIP créé.
+- Déploiement associé 38848457260 : **skipped**, aucune modification de production.
+- Script WP-CLI de vérification de version et d'activation : inclus dans la livraison suivante, CI à confirmer.

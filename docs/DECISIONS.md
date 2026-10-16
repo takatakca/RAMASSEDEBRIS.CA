@@ -44,3 +44,7 @@ La recherche de coordonnées des demandes est limitée à l'interface d'administ
 
 ## D-014 — Préproduction technique CI jetable (2026-10-15)
 Le workflow de validation installe un WordPress et un MySQL éphémères, sans comptes clients ni secrets de production, pour exercer les permissions réelles de WordPress et ses traitements de demandes. Ce job fait partie de la validation en amont de toute publication automatique. Il ne remplace pas une sauvegarde restaurable ni une préproduction fidèle du vrai site avec ses extensions historiques.
+
+## D-015 — Vérification de publication non destructive (2026-10-15)
+
+Un script WP-CLI en lecture seule contrôle la version et l'activation du plugin sur un WordPress dont le chemin est explicitement connu. Il est testé sur une installation CI jetable, sans secrets ni données de production. La réussite du test CI ne suffit pas à déclarer le site historique déployé.

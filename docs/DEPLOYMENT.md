@@ -84,3 +84,11 @@ En préproduction, après installation ou mise à jour du plugin, vérifier avec
 ## Validation native WordPress en CI
 
 Le job `wordpress-integration` de GitHub Actions crée un WordPress et une base MySQL temporaires. Il y active la version courante du plugin et effectue les tests de droits, recherche, export/effacement et shortcode sans toucher au serveur historique. Le workflow de transfert en production ne doit fonctionner automatiquement qu'après réussite de **tous** les jobs de validation, mais demeure inactif tant que l'environnement production n'est pas qualifié. Sur une préproduction réelle, comparer WordPress, PHP, cache, SMTP et plugins WooCommerce/YITH avec le site existant.
+
+## Vérification réelle de version et activation
+
+Utiliser WP-CLI en lecture seule avec un utilisateur non root et un chemin WordPress vérifié :
+
+    bash scripts/wp-check-plugin-readonly.sh /chemin/absolu/wordpress 0.5.0
+
+Ce contrôle échoue si la version ou l'activation ne correspond pas, sans modifier le site. Il est exercé dans le WordPress CI temporaire, mais doit aussi être utilisé après une installation réelle approuvée. Le résultat seul ne remplace pas un test fonctionnel complet avec SMTP, cache et réservations existantes.

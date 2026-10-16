@@ -38,3 +38,9 @@ Contrôles du plugin 0.4.0 réussis sur 1c9adb52f88a8318e9f61a944c3ea3942e6a7337
 
 - [ ] Vérifier le job `wordpress-integration` sur WordPress/MySQL jetables (première exécution CI après publication), corriger jusqu'au vert.
 - [ ] Tester séparément en préproduction réelle les extensions WooCommerce/YITH, Wordfence, le site et les sauvegardes; le WordPress jetable n'en apporte aucune preuve.
+
+## Contrôles complémentaires
+
+- [x] Tests d'intégration WordPress/MySQL réellement exécutés en CI : run 38848368743 réussi.
+- [ ] Valider le nouveau script de vérification de version/activation WP-CLI sur le runner CI (la production demeure inaccessible).
+- [ ] Répéter la vérification sur la préproduction historique avec les vraies extensions et les sauvegardes.

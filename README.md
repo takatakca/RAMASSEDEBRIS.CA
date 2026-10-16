@@ -64,3 +64,11 @@ Seuls les administrateurs autorisés à `manage_options` peuvent consulter et tr
 ## Intégration WordPress automatisée
 
 Le workflow de validation comprend aussi une instance **jetable** de WordPress/MySQL isolée du site de production. Le test `tests/wordpress-integration.php` vérifie le chargement réel du plugin, les capacités admin/éditeur/auteur, les recherches WP_Query, les hooks d'accès/effacement de données et le shortcode. Aucun accès ni copie des données de ramassedebris.ca n'est utilisé. La réussite de ce test ne remplace pas l'essai sur la préproduction historique avec WooCommerce/YITH.
+
+## Vérification de la version active (WP-CLI)
+
+Après un déploiement autorisé sur un environnement WordPress existant, exécuter sans privilèges root :
+
+    bash scripts/wp-check-plugin-readonly.sh /chemin/absolu/wordpress 0.5.0
+
+Cette commande ne modifie rien; elle exige la version annoncée et le statut actif. Les tests automatisés WordPress/MySQL jetables ont réussi (run 38848368743), sans toucher au site historique.

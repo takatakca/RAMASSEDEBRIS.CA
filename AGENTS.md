@@ -23,3 +23,7 @@ Relire AGENTS.md, docs/AGENT_HANDOFF.md, docs/PROJECT_STATUS.md, docs/TASK_QUEUE
 Le workflow GitHub .github/workflows/validate.yml produit un ZIP installable. L'autodéploiement reste inactif tant que les préconditions documentées dans docs/DEPLOYMENT.md ne sont pas réunies.
 
 Un orchestrateur externe autorisé est indispensable pour relancer automatiquement un agent interrompu : le présent prompt ne peut pas le faire seul.
+
+Pour vérifier la version réellement active sur un WordPress autorisé, en lecture seule :
+
+    bash scripts/wp-check-plugin-readonly.sh /chemin/absolu/wordpress 0.5.0
